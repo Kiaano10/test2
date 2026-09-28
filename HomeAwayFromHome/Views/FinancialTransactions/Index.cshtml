@@ -1,77 +1,173 @@
 @model IEnumerable<HomeAwayFromHome.Models.FinancialTransaction>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Financial Transactions";
+
+    var totalAmount = Model.Sum(x => x.Amount);
+    var transactionCount = Model.Count();
 }
 
-<h1>Index</h1>
+<div class="management-page">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PropertyID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Property)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BookingID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Booking)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TransactionType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Amount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TransactionDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.PropertyID)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Property)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.BookingID)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Booking)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.TransactionType)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Amount)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.TransactionDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.FinancialTransactionID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.FinancialTransactionID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.FinancialTransactionID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="management-header">
+
+        <div>
+            <span class="page-eyebrow">FINANCIAL MANAGEMENT</span>
+            <h1>Transactions</h1>
+            <p>Track financial activity associated with your properties.</p>
+        </div>
+
+        <a asp-action="Create" class="btn-primary-custom">
+            <span>+</span> New Transaction
+        </a>
+
+    </div>
+
+
+    <div class="summary-row">
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                TOTAL TRANSACTIONS
+            </span>
+
+            <strong>
+                @transactionCount
+            </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                TOTAL VALUE
+            </span>
+
+            <strong>
+                R @totalAmount.ToString("N2")
+            </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                RECORDING PERIOD
+            </span>
+
+            <strong>
+                @(Model.Any()
+                    ? Model.Min(x => x.TransactionDate).ToString("MMM yyyy")
+                    : "—")
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="data-card">
+
+        <div class="data-card-header">
+
+            <div>
+                <h2>Transaction History</h2>
+                <p>Financial transactions recorded in the system.</p>
+            </div>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="modern-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Date</th>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Booking</th>
+                        <th>Amount</th>
+                        <th></th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                @item.TransactionDate.ToString("dd MMM yyyy")
+                            </td>
+
+                            <td>
+                                <strong>
+                                    @item.Property?.PropertyName
+                                </strong>
+                            </td>
+
+                            <td>
+
+                                <span class="transaction-type">
+                                    @item.TransactionType
+                                </span>
+
+                            </td>
+
+                            <td>
+                                @item.Description
+                            </td>
+
+                            <td>
+                                @(item.BookingID.HasValue
+                                    ? "#" + item.BookingID
+                                    : "—")
+                            </td>
+
+                            <td>
+
+                                <strong class="amount-value">
+                                    R @item.Amount.ToString("N2")
+                                </strong>
+
+                            </td>
+
+                            <td>
+
+                                <div class="table-actions">
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.FinancialTransactionID">
+                                        View
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.FinancialTransactionID">
+                                        Edit
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

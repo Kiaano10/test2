@@ -1,82 +1,88 @@
 @model HomeAwayFromHome.Models.Property
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Property";
 }
 
-<h1>Edit</h1>
+<div class="hafh-page">
+    <div class="hafh-form-container">
 
-<h4>Property</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+        <div class="hafh-form-header">
+            <div>
+                <span class="hafh-eyebrow">PROPERTY MANAGEMENT</span>
+                <h1>Edit Property</h1>
+                <p>Update the property information below.</p>
+            </div>
+
+            <a asp-action="Index" class="hafh-btn hafh-btn-outline">
+                ← Back to Properties
+            </a>
+        </div>
+
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <input type="hidden" asp-for="PropertyID" />
-            <div class="form-group">
-                <label asp-for="PropertyName" class="control-label"></label>
-                <input asp-for="PropertyName" class="form-control" />
-                <span asp-validation-for="PropertyName" class="text-danger"></span>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="hafh-form-grid">
+
+                <div class="hafh-form-group">
+                    <label asp-for="PropertyName"></label>
+                    <input asp-for="PropertyName" class="form-control" />
+                    <span asp-validation-for="PropertyName" class="text-danger"></span>
+                </div>
+
+                <div class="hafh-form-group">
+                    <label asp-for="Address"></label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="hafh-form-group full-width">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="hafh-form-group">
+                    <label asp-for="Bedrooms"></label>
+                    <input asp-for="Bedrooms" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="Bedrooms" class="text-danger"></span>
+                </div>
+
+                <div class="hafh-form-group">
+                    <label asp-for="Bathrooms"></label>
+                    <input asp-for="Bathrooms" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="Bathrooms" class="text-danger"></span>
+                </div>
+
+                <div class="hafh-form-group">
+                    <label asp-for="MaximumGuests"></label>
+                    <input asp-for="MaximumGuests" class="form-control" type="number" min="1" />
+                    <span asp-validation-for="MaximumGuests" class="text-danger"></span>
+                </div>
+
+                <div class="hafh-form-group">
+                    <label asp-for="PricePerNight"></label>
+                    <div class="hafh-input-prefix">
+                        <span>R</span>
+                        <input asp-for="PricePerNight" class="form-control" type="number" step="0.01" />
+                    </div>
+                    <span asp-validation-for="PricePerNight" class="text-danger"></span>
+                </div>
+
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+
+            <div class="hafh-form-actions">
+                <a asp-action="Index" class="hafh-btn hafh-btn-secondary">Cancel</a>
+                <button type="submit" class="hafh-btn hafh-btn-gold">
+                    Save Changes
+                </button>
             </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaximumGuests" class="control-label"></label>
-                <input asp-for="MaximumGuests" class="form-control" />
-                <span asp-validation-for="MaximumGuests" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Bedrooms" class="control-label"></label>
-                <input asp-for="Bedrooms" class="form-control" />
-                <span asp-validation-for="Bedrooms" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Bathrooms" class="control-label"></label>
-                <input asp-for="Bathrooms" class="form-control" />
-                <span asp-validation-for="Bathrooms" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PricePerNight" class="control-label"></label>
-                <input asp-for="PricePerNight" class="form-control" />
-                <span asp-validation-for="PricePerNight" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Bookings" class="control-label"></label>
-                <input asp-for="Bookings" class="form-control" />
-                <span asp-validation-for="Bookings" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Availabilities" class="control-label"></label>
-                <input asp-for="Availabilities" class="form-control" />
-                <span asp-validation-for="Availabilities" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PropertyAmenities" class="control-label"></label>
-                <input asp-for="PropertyAmenities" class="form-control" />
-                <span asp-validation-for="PropertyAmenities" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FinancialTransactions" class="control-label"></label>
-                <input asp-for="FinancialTransactions" class="form-control" />
-                <span asp-validation-for="FinancialTransactions" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

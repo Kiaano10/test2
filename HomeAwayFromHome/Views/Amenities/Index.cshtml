@@ -1,47 +1,91 @@
 @model IEnumerable<HomeAwayFromHome.Models.Amenity>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Amenities";
 }
 
-<h1>Index</h1>
+<div class="management-page">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PropertyAmenities)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.PropertyAmenities)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AmenityID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AmenityID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AmenityID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="management-header">
+
+        <div>
+            <span class="page-eyebrow">PROPERTY FEATURES</span>
+            <h1>Amenities</h1>
+            <p>Manage the facilities and features available to guests.</p>
+        </div>
+
+        <a asp-action="Create" class="btn-primary-custom">
+            <span>+</span> Add Amenity
+        </a>
+
+    </div>
+
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+
+            <div class="empty-icon">✦</div>
+
+            <h3>No amenities yet</h3>
+
+            <p>
+                Add amenities such as Wi-Fi, parking, swimming pool
+                or other facilities.
+            </p>
+
+            <a asp-action="Create" class="btn-primary-custom">
+                Add Amenity
+            </a>
+
+        </div>
+    }
+    else
+    {
+        <div class="amenity-grid">
+
+            @foreach (var item in Model)
+            {
+                <div class="amenity-card">
+
+                    <div class="amenity-icon">
+                        ✦
+                    </div>
+
+                    <div class="amenity-content">
+
+                        <h2>@item.Name</h2>
+
+                        <p>
+                            @item.Description
+                        </p>
+
+                    </div>
+
+                    <div class="amenity-footer">
+
+                        <a asp-action="Edit"
+                           asp-route-id="@item.AmenityID">
+                            Edit
+                        </a>
+
+                        <a asp-action="Details"
+                           asp-route-id="@item.AmenityID">
+                            Details
+                        </a>
+
+                        <a asp-action="Delete"
+                           asp-route-id="@item.AmenityID"
+                           class="danger-link">
+                            Delete
+                        </a>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

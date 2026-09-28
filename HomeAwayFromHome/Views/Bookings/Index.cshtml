@@ -1,101 +1,156 @@
 @model IEnumerable<HomeAwayFromHome.Models.Booking>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Bookings";
 }
 
-<h1>Index</h1>
+<div class="management-page">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UserID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PropertyID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Property)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CheckInDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CheckOutDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberOfGuests)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalAmount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Reviews)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FinancialTransactions)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.UserID)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.User)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.PropertyID)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Property)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.CheckInDate)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.CheckOutDate)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.NumberOfGuests)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.TotalAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Reviews)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.FinancialTransactions)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.BookingID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.BookingID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.BookingID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="management-header">
+        <div>
+            <span class="page-eyebrow">RESERVATION MANAGEMENT</span>
+            <h1>Bookings</h1>
+            <p>View and manage guest reservations.</p>
+        </div>
+
+        <a asp-action="Create" class="btn-primary-custom">
+            <span>+</span> New Booking
+        </a>
+    </div>
+
+    <div class="summary-row">
+
+        <div class="summary-card">
+            <span class="summary-label">TOTAL BOOKINGS</span>
+            <strong>@Model.Count()</strong>
+        </div>
+
+        <div class="summary-card">
+            <span class="summary-label">PENDING</span>
+            <strong>
+                @Model.Count(x => x.Status == "Pending")
+            </strong>
+        </div>
+
+        <div class="summary-card">
+            <span class="summary-label">CONFIRMED</span>
+            <strong>
+                @Model.Count(x => x.Status == "Confirmed")
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="data-card">
+
+        <div class="data-card-header">
+            <div>
+                <h2>Recent Bookings</h2>
+                <p>All reservations currently recorded in the system.</p>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="modern-table">
+
+                <thead>
+                    <tr>
+                        <th>Booking</th>
+                        <th>Property</th>
+                        <th>Stay</th>
+                        <th>Guests</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                <span class="table-id">
+                                    #@item.BookingID
+                                </span>
+                                <small>
+                                    @item.CreatedAt.ToString("dd MMM yyyy")
+                                </small>
+                            </td>
+
+                            <td>
+                                <strong>
+                                    @item.Property?.PropertyName
+                                </strong>
+                            </td>
+
+                            <td>
+                                <div class="date-range">
+                                    <span>
+                                        @item.CheckInDate.ToString("dd MMM yyyy")
+                                    </span>
+                                    <span class="date-arrow">→</span>
+                                    <span>
+                                        @item.CheckOutDate.ToString("dd MMM yyyy")
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td>
+                                @item.NumberOfGuests
+                            </td>
+
+                            <td>
+                                <strong>
+                                    R @item.TotalAmount.ToString("N2")
+                                </strong>
+                            </td>
+
+                            <td>
+                                @{
+                                    var statusClass =
+                                        item.Status?.ToLower() switch
+                                        {
+                                            "confirmed" => "status-confirmed",
+                                            "cancelled" => "status-cancelled",
+                                            "completed" => "status-completed",
+                                            _ => "status-pending"
+                                        };
+                                }
+
+                                <span class="status-badge @statusClass">
+                                    @item.Status
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="table-actions">
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.BookingID">
+                                        View
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.BookingID">
+                                        Edit
+                                    </a>
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

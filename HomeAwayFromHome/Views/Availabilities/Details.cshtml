@@ -1,52 +1,56 @@
-@model HomeAwayFromHome.Models.Availability
+@model HomeAwayFromHome.Models.Amenity
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Amenity Details";
 }
 
-<h1>Details</h1>
+<div class="hafh-page">
 
-<div>
-    <h4>Availability</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PropertyID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PropertyID)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Property)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Property)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AvailableFrom)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AvailableFrom)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AvailableTo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AvailableTo)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AvailabilityID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="hafh-detail-header">
+        <div>
+            <span class="hafh-eyebrow">AMENITY</span>
+            <h1>@Model.Name</h1>
+            <p>Amenity details</p>
+        </div>
+
+        <div class="hafh-detail-actions">
+            <a asp-action="Edit" asp-route-id="@Model.AmenityID"
+               class="hafh-btn hafh-btn-gold">
+                Edit
+            </a>
+
+            <a asp-action="Index" class="hafh-btn hafh-btn-outline">
+                Back
+            </a>
+        </div>
+    </div>
+
+    <div class="hafh-detail-card">
+
+        <div class="hafh-detail-section">
+            <h3>Amenity Information</h3>
+
+            <div class="hafh-detail-grid">
+
+                <div>
+                    <span>ID</span>
+                    <strong>@Model.AmenityID</strong>
+                </div>
+
+                <div>
+                    <span>Name</span>
+                    <strong>@Model.Name</strong>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="hafh-detail-section">
+            <h3>Description</h3>
+            <p class="hafh-description">
+                @Model.Description
+            </p>
+        </div>
+
+    </div>
 </div>

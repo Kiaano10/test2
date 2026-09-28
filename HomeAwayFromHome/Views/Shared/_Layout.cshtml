@@ -1,64 +1,1201 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - HomeAwayFromHome</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/HomeAwayFromHome.styles.css" asp-append-version="true" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/Image/Logo.jpeg" alt="Home Away From Home Logo" class="navbar-logo" />
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Bookings" asp-action="Index">Booking</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Properties" asp-action="Index">Property</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Availabilities" asp-action="Index">Availability</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Amenities" asp-action="Index">Amenity</a>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Reviews" asp-action="Index">Review</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="FinancialTransactions" asp-action="Index">FinancialTransactions</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - HomeAwayFromHome - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @ViewData["Title"] - Home Away From Home
+    </title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Main Site CSS -->
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/HomeAwayFromHome.styles.css"
+          asp-append-version="true" />
+
+
+    <style>
+
+            /* =====================================================
+                       HOME AWAY FROM HOME
+                       SHARED LAYOUT
+                       ===================================================== */
+
+            :root {
+                --hafh-navy: #172033;
+                --hafh-navy-light: #263650;
+                --hafh-gold: #e9b44c;
+                --hafh-gold-light: #f3c969;
+                --hafh-white: #ffffff;
+            }
+
+
+            /* =====================================================
+                       GENERAL
+                       ===================================================== */
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                margin: 0;
+                background: #f8f6f2;
+            }
+
+            .site-main {
+                min-height: calc(100vh - 400px);
+            }
+
+
+            /* =====================================================
+                       NAVIGATION BAR
+                       ===================================================== */
+
+            .hafh-navbar {
+                position: relative;
+                z-index: 1000;
+                width: 100%;
+                background: var(--hafh-navy);
+                border-bottom: 1px solid rgba(255,255,255,.08);
+                box-shadow: 0 5px 20px rgba(0,0,0,.12);
+            }
+
+
+            .hafh-nav-container {
+                width: min(1200px, calc(100% - 40px));
+                height: 76px;
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+                gap: 35px;
+            }
+
+
+            /* =====================================================
+                       BRAND
+                       ===================================================== */
+
+            .hafh-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-shrink: 0;
+                color: white !important;
+                text-decoration: none !important;
+            }
+
+
+                .hafh-brand img {
+                    width: 42px;
+                    height: 42px;
+                    object-fit: contain;
+                    border-radius: 7px;
+                    background: white;
+                }
+
+
+            .hafh-brand-name {
+                display: flex;
+                flex-direction: column;
+                line-height: 1;
+            }
+
+
+                .hafh-brand-name span {
+                    color: #fff;
+                    font-size: .86rem;
+                    font-weight: 800;
+                    letter-spacing: .04em;
+                }
+
+
+                .hafh-brand-name small {
+                    margin-top: 5px;
+                    color: var(--hafh-gold);
+                    font-size: .52rem;
+                    font-weight: 700;
+                    letter-spacing: .21em;
+                }
+
+
+            /* =====================================================
+                       MAIN NAVIGATION
+                       ===================================================== */
+
+            .hafh-navigation {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                margin-left: auto;
+            }
+
+
+            .hafh-nav-item {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 40px;
+                padding: 0 15px;
+                border: 0;
+                border-radius: 6px;
+                color: rgba(255,255,255,.68) !important;
+                background: transparent;
+                font-family: inherit;
+                font-size: .79rem;
+                font-weight: 700;
+                text-decoration: none !important;
+                cursor: pointer;
+                transition: background .18s ease, color .18s ease;
+            }
+
+
+                .hafh-nav-item:hover {
+                    color: #fff !important;
+                    background: rgba(255,255,255,.09);
+                }
+
+
+            .hafh-nav-active {
+                color: var(--hafh-navy) !important;
+                background: var(--hafh-gold);
+            }
+
+
+                .hafh-nav-active:hover {
+                    color: var(--hafh-navy) !important;
+                    background: var(--hafh-gold-light);
+                }
+
+
+            /* =====================================================
+                       MANAGE DROPDOWN
+                       ===================================================== */
+
+            .hafh-manage {
+                position: relative;
+            }
+
+
+            .hafh-manage-button {
+                gap: 7px;
+            }
+
+
+                .hafh-manage-button span {
+                    color: var(--hafh-gold);
+                    font-size: .9rem;
+                }
+
+
+            .hafh-manage-menu {
+                position: absolute;
+                top: calc(100% + 8px);
+                right: 0;
+                width: 205px;
+                padding: 7px;
+                border: 1px solid rgba(255,255,255,.08);
+                border-radius: 9px;
+                background: #202d44;
+                box-shadow: 0 15px 35px rgba(0,0,0,.25);
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-5px);
+                transition: .18s ease;
+            }
+
+
+            .hafh-manage:hover .hafh-manage-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+
+            .hafh-manage-menu a {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                padding: 10px 11px;
+                border-radius: 6px;
+                color: rgba(255,255,255,.75) !important;
+                font-size: .78rem;
+                font-weight: 600;
+                text-decoration: none !important;
+                transition: .15s ease;
+            }
+
+
+                .hafh-manage-menu a span {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 5px;
+                    color: var(--hafh-navy);
+                    background: var(--hafh-gold);
+                    font-size: .68rem;
+                    font-weight: 800;
+                }
+
+
+                .hafh-manage-menu a:hover {
+                    color: #fff !important;
+                    background: rgba(255,255,255,.08);
+                }
+
+
+            /* =====================================================
+                       ACCOUNT AREA
+                       ===================================================== */
+
+            .hafh-account {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-shrink: 0;
+            }
+
+
+                .hafh-account form {
+                    margin: 0;
+                }
+
+
+            .hafh-signin,
+            .hafh-account-button,
+            .hafh-signout {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 40px;
+                padding: 0 13px;
+                border: 0;
+                border-radius: 6px;
+                color: rgba(255,255,255,.72) !important;
+                background: transparent;
+                font-family: inherit;
+                font-size: .76rem;
+                font-weight: 700;
+                text-decoration: none !important;
+                cursor: pointer;
+                transition: .18s ease;
+            }
+
+
+                .hafh-signin:hover,
+                .hafh-account-button:hover,
+                .hafh-signout:hover {
+                    color: #fff !important;
+                    background: rgba(255,255,255,.08);
+                }
+
+
+            .hafh-register {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 40px;
+                padding: 0 17px;
+                border-radius: 6px;
+                color: var(--hafh-navy) !important;
+                background: var(--hafh-gold);
+                font-size: .76rem;
+                font-weight: 800;
+                text-decoration: none !important;
+                transition: .18s ease;
+            }
+
+
+                .hafh-register:hover {
+                    color: var(--hafh-navy) !important;
+                    background: var(--hafh-gold-light);
+                    transform: translateY(-1px);
+                }
+
+
+            /* =====================================================
+                       MOBILE BUTTON
+                       ===================================================== */
+
+            .hafh-mobile-button {
+                display: none;
+                width: 42px;
+                height: 40px;
+                padding: 8px;
+                border: 1px solid rgba(255,255,255,.15);
+                border-radius: 6px;
+                background: transparent;
+                cursor: pointer;
+            }
+
+
+                .hafh-mobile-button span {
+                    display: block;
+                    width: 100%;
+                    height: 2px;
+                    margin: 5px 0;
+                    background: #fff;
+                    border-radius: 2px;
+                }
+
+
+            /* =====================================================
+                       MOBILE MENU
+                       ===================================================== */
+
+            .hafh-mobile-menu {
+                display: none;
+                padding: 10px 20px 20px;
+                background: var(--hafh-navy);
+                border-top: 1px solid rgba(255,255,255,.08);
+            }
+
+
+                .hafh-mobile-menu.mobile-visible {
+                    display: block;
+                }
+
+
+                .hafh-mobile-menu > a {
+                    display: block;
+                    padding: 12px;
+                    border-radius: 6px;
+                    color: rgba(255,255,255,.75) !important;
+                    font-size: .84rem;
+                    font-weight: 650;
+                    text-decoration: none !important;
+                }
+
+
+                    .hafh-mobile-menu > a:hover {
+                        color: #fff !important;
+                        background: rgba(255,255,255,.07);
+                    }
+
+
+            .mobile-section-title {
+                margin: 18px 12px 5px;
+                color: var(--hafh-gold);
+                font-size: .62rem;
+                font-weight: 800;
+                letter-spacing: .13em;
+            }
+
+
+            .mobile-account {
+                display: flex;
+                gap: 8px;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid rgba(255,255,255,.08);
+            }
+
+
+                .mobile-account a {
+                    flex: 1;
+                    padding: 11px;
+                    border-radius: 6px;
+                    color: var(--hafh-navy) !important;
+                    background: var(--hafh-gold);
+                    font-size: .8rem;
+                    font-weight: 800;
+                    text-align: center;
+                    text-decoration: none !important;
+                }
+
+
+            /* =====================================================
+                       FOOTER
+                       ===================================================== */
+
+            .site-footer {
+                color: rgba(255,255,255,.7);
+                background: #101827;
+            }
+
+
+            .footer-container {
+                width: min(1200px, calc(100% - 40px));
+                margin: 0 auto;
+            }
+
+
+            .footer-main {
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+                gap: 60px;
+                padding: 65px 0 50px;
+            }
+
+
+            .footer-brand {
+                max-width: 330px;
+            }
+
+
+            .footer-logo {
+                display: inline-flex;
+                width: 45px;
+                height: 45px;
+                margin-bottom: 14px;
+                overflow: hidden;
+                border-radius: 7px;
+                background: #fff;
+            }
+
+
+                .footer-logo img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+
+            .footer-brand strong {
+                display: block;
+                color: #fff;
+                font-size: .88rem;
+                font-weight: 800;
+                letter-spacing: .07em;
+            }
+
+
+            .footer-brand span {
+                display: block;
+                margin-top: 4px;
+                color: var(--hafh-gold);
+                font-size: .52rem;
+                font-weight: 700;
+                letter-spacing: .2em;
+            }
+
+
+            .footer-brand p {
+                margin-top: 16px;
+                color: rgba(255,255,255,.5);
+                font-size: .84rem;
+                line-height: 1.7;
+            }
+
+
+            .footer-column {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+
+                .footer-column h3 {
+                    margin: 0 0 9px;
+                    color: #fff;
+                    font-size: .76rem;
+                    font-weight: 800;
+                    letter-spacing: .1em;
+                    text-transform: uppercase;
+                }
+
+
+                .footer-column a {
+                    color: rgba(255,255,255,.55) !important;
+                    font-size: .81rem;
+                    text-decoration: none !important;
+                    transition: color .18s ease;
+                }
+
+
+                    .footer-column a:hover {
+                        color: var(--hafh-gold) !important;
+                    }
+
+
+            .footer-bottom {
+                display: flex;
+                justify-content: space-between;
+                padding: 20px 0;
+                border-top: 1px solid rgba(255,255,255,.08);
+                color: rgba(255,255,255,.38);
+                font-size: .7rem;
+            }
+
+
+            /* =====================================================
+                       TABLET
+                       ===================================================== */
+
+            @@media (max-width: 900px) {
+
+                .hafh-nav-container {
+                    width: calc(100% - 30px);
+                    gap: 20px;
+                }
+
+
+                .hafh-navigation {
+                    gap: 0;
+                }
+
+
+                .hafh-nav-item {
+                    padding: 0 10px;
+                }
+
+
+                .hafh-account {
+                    gap: 2px;
+                }
+
+
+                .hafh-signin {
+                    display: none;
+                }
+
+
+                .footer-main {
+                    grid-template-columns: 1fr 1fr;
+                    gap: 40px;
+                }
+            }
+
+
+            /* =====================================================
+                       MOBILE
+                       ===================================================== */
+
+            @@media (max-width: 720px) {
+
+                .hafh-nav-container {
+                    width: calc(100% - 25px);
+                    height: 68px;
+                }
+
+
+                .hafh-navigation,
+                .hafh-account {
+                    display: none;
+                }
+
+
+                .hafh-mobile-button {
+                    display: block;
+                    margin-left: auto;
+                }
+
+
+                .hafh-brand img {
+                    width: 39px;
+                    height: 39px;
+                }
+
+
+                .hafh-brand-name span {
+                    font-size: .78rem;
+                }
+
+
+                .hafh-brand-name small {
+                    font-size: .47rem;
+                }
+
+
+                .footer-container {
+                    width: calc(100% - 30px);
+                }
+
+
+                .footer-main {
+                    grid-template-columns: 1fr;
+                    gap: 35px;
+                }
+
+
+                .footer-bottom {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         NAVIGATION
+         ===================================================== -->
+
+    <header class="site-header">
+
+        <nav class="hafh-navbar">
+
+            <div class="hafh-nav-container">
+
+
+                <!-- BRAND -->
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="hafh-brand">
+
+                    <img src="~/Image/Logo.jpeg"
+                         alt="Home Away From Home" />
+
+                    <div class="hafh-brand-name">
+
+                        <span>
+                            Home Away
+                        </span>
+
+                        <small>
+                            FROM HOME
+                        </small>
+
+                    </div>
+
+                </a>
+
+
+                <!-- DESKTOP NAVIGATION -->
+
+                <div class="hafh-navigation">
+
+
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="hafh-nav-item @(currentController == "Home" ? "hafh-nav-active" : "")">
+
+                        Home
+
+                    </a>
+
+
+                    <a asp-controller="Properties"
+                       asp-action="Index"
+                       class="hafh-nav-item @(currentController == "Properties" ? "hafh-nav-active" : "")">
+
+                        Properties
+
+                    </a>
+
+
+                    <a asp-controller="Bookings"
+                       asp-action="Index"
+                       class="hafh-nav-item @(currentController == "Bookings" ? "hafh-nav-active" : "")">
+
+                        Bookings
+
+                    </a>
+
+
+                    <!-- MANAGE -->
+
+                    <div class="hafh-manage">
+
+                        <button type="button"
+                                class="hafh-nav-item hafh-manage-button">
+
+                            Manage
+
+                            <span>
+                                ⌄
+                            </span>
+
+                        </button>
+
+
+                        <div class="hafh-manage-menu">
+
+
+                            <a asp-controller="Amenities"
+                               asp-action="Index">
+
+                                <span>✦</span>
+
+                                Amenities
+
+                            </a>
+
+
+                            <a asp-controller="Availabilities"
+                               asp-action="Index">
+
+                                <span>◷</span>
+
+                                Availability
+
+                            </a>
+
+
+                            <a asp-controller="FinancialTransactions"
+                               asp-action="Index">
+
+                                <span>R</span>
+
+                                Transactions
+
+                            </a>
+
+
+                            <a asp-controller="Reviews"
+                               asp-action="Index">
+
+                                <span>★</span>
+
+                                Reviews
+
+                            </a>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACCOUNT -->
+
+                <div class="hafh-account">
+
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Manage/Index"
+                           class="hafh-account-button">
+
+                            Account
+
+                        </a>
+
+
+                        <form asp-area="Identity"
+                              asp-page="/Account/Logout"
+                              asp-route-returnUrl="@Url.Action("Index", "Home")"
+                              method="post">
+
+                            <button type="submit"
+                                    class="hafh-signout">
+
+                                Sign Out
+
+                            </button>
+
+                        </form>
+
+                    }
+                    else
+                    {
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Login"
+                           class="hafh-signin">
+
+                            Sign In
+
+                        </a>
+
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Register"
+                           class="hafh-register">
+
+                            Register
+
+                        </a>
+
+                    }
+
+                </div>
+
+
+                <!-- MOBILE MENU BUTTON -->
+
+                <button type="button"
+                        class="hafh-mobile-button"
+                        onclick="toggleHafhMenu()"
+                        aria-label="Open navigation">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </button>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 MOBILE NAVIGATION
+                 ================================================= -->
+
+            <div class="hafh-mobile-menu"
+                 id="hafhMobileMenu">
+
+
+                <a asp-controller="Home"
+                   asp-action="Index">
+
+                    Home
+
+                </a>
+
+
+                <a asp-controller="Properties"
+                   asp-action="Index">
+
+                    Properties
+
+                </a>
+
+
+                <a asp-controller="Bookings"
+                   asp-action="Index">
+
+                    Bookings
+
+                </a>
+
+
+                <div class="mobile-section-title">
+
+                    MANAGEMENT
+
+                </div>
+
+
+                <a asp-controller="Amenities"
+                   asp-action="Index">
+
+                    Amenities
+
+                </a>
+
+
+                <a asp-controller="Availabilities"
+                   asp-action="Index">
+
+                    Availability
+
+                </a>
+
+
+                <a asp-controller="FinancialTransactions"
+                   asp-action="Index">
+
+                    Transactions
+
+                </a>
+
+
+                <a asp-controller="Reviews"
+                   asp-action="Index">
+
+                    Reviews
+
+                </a>
+
+
+                <div class="mobile-account">
+
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Manage/Index">
+
+                            Account
+
+                        </a>
+
+                    }
+                    else
+                    {
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Login">
+
+                            Sign In
+
+                        </a>
+
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Register">
+
+                            Register
+
+                        </a>
+
+                    }
+
+                </div>
+
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="site-main">
+
+        @RenderBody()
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer class="site-footer">
+
+        <div class="footer-container">
+
+            <div class="footer-main">
+
+
+                <!-- BRAND -->
+
+                <div class="footer-brand">
+
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="footer-logo">
+
+                        <img src="~/Image/Logo.jpeg"
+                             alt="Home Away From Home" />
+
+                    </a>
+
+
+                    <strong>
+                        HOME AWAY
+                    </strong>
+
+                    <span>
+                        FROM HOME
+                    </span>
+
+
+                    <p>
+                        A comfortable place to stay,
+                        relax and feel at home.
+                    </p>
+
+                </div>
+
+
+                <!-- EXPLORE -->
+
+                <div class="footer-column">
+
+                    <h3>
+                        Explore
+                    </h3>
+
+
+                    <a asp-controller="Home"
+                       asp-action="Index">
+
+                        Home
+
+                    </a>
+
+
+                    <a asp-controller="Properties"
+                       asp-action="Index">
+
+                        Properties
+
+                    </a>
+
+
+                    <a asp-controller="Bookings"
+                       asp-action="Index">
+
+                        Bookings
+
+                    </a>
+
+                </div>
+
+
+                <!-- MANAGEMENT -->
+
+                <div class="footer-column">
+
+                    <h3>
+                        Management
+                    </h3>
+
+
+                    <a asp-controller="Amenities"
+                       asp-action="Index">
+
+                        Amenities
+
+                    </a>
+
+
+                    <a asp-controller="Availabilities"
+                       asp-action="Index">
+
+                        Availability
+
+                    </a>
+
+
+                    <a asp-controller="FinancialTransactions"
+                       asp-action="Index">
+
+                        Transactions
+
+                    </a>
+
+
+                    <a asp-controller="Reviews"
+                       asp-action="Index">
+
+                        Reviews
+
+                    </a>
+
+                </div>
+
+
+                <!-- ACCOUNT -->
+
+                <div class="footer-column">
+
+                    <h3>
+                        Account
+                    </h3>
+
+
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Manage/Index">
+
+                            My Account
+
+                        </a>
+
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Logout">
+
+                            Sign Out
+
+                        </a>
+
+                    }
+                    else
+                    {
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Login">
+
+                            Sign In
+
+                        </a>
+
+
+                        <a asp-area="Identity"
+                           asp-page="/Account/Register">
+
+                            Create Account
+
+                        </a>
+
+                    }
+
+                </div>
+
+
+            </div>
+
+
+            <div class="footer-bottom">
+
+                <span>
+                    © @DateTime.Now.Year Home Away From Home
+                </span>
+
+                <span>
+                    Comfort • Convenience • Home
+                </span>
+
+            </div>
+
+
         </div>
+
     </footer>
+
+
+    <!-- =====================================================
+         SCRIPTS
+         ===================================================== -->
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
+
+
+    <script>
+
+            function toggleHafhMenu() {
+
+                const menu =
+                    document.getElementById("hafhMobileMenu");
+
+                menu.classList.toggle("mobile-visible");
+
+            }
+
+    </script>
+
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false
+    )
+
+
 </body>
+
 </html>

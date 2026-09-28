@@ -1,90 +1,558 @@
 @model HomeAwayFromHome.Models.Property
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add Property";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<style>
+    /* =========================================
+       HOME AWAY FROM HOME - PROPERTY FORM
+       ========================================= */
 
-<h4>Property</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    .property-page {
+        min-height: calc(100vh - 80px);
+        background: #f5f6f8;
+        padding: 50px 25px 70px;
+    }
 
-            <div class="form-group">
-                <label asp-for="PropertyName" class="control-label"></label>
-                <input asp-for="PropertyName" class="form-control" />
-                <span asp-validation-for="PropertyName" class="text-danger"></span>
+    .property-container {
+        max-width: 1050px;
+        margin: 0 auto;
+    }
+
+    /* Header */
+
+    .property-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .property-heading-left {
+        max-width: 650px;
+    }
+
+    .property-eyebrow {
+        display: inline-block;
+        color: #b98728;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .property-heading h1 {
+        margin: 0;
+        color: #172033;
+        font-size: 2.15rem;
+        font-weight: 750;
+        letter-spacing: -0.5px;
+    }
+
+    .property-heading p {
+        margin: 8px 0 0;
+        color: #697386;
+        font-size: 0.98rem;
+    }
+
+    /* Back button */
+
+    .property-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 17px;
+        border: 1px solid #d5dae2;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #172033 !important;
+        text-decoration: none !important;
+        font-size: 0.88rem;
+        font-weight: 650;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .property-back:hover {
+        background: #172033;
+        border-color: #172033;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+    }
+
+    /* Main card */
+
+    .property-card {
+        background: #ffffff;
+        border: 1px solid #e4e7ec;
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(23, 32, 51, 0.07);
+        overflow: hidden;
+    }
+
+    .property-card-top {
+        padding: 30px 35px 25px;
+        border-bottom: 1px solid #edf0f4;
+        background: #ffffff;
+    }
+
+    .property-card-title {
+        margin: 0;
+        color: #172033;
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
+
+    .property-card-subtitle {
+        margin: 5px 0 0;
+        color: #7a8391;
+        font-size: 0.88rem;
+    }
+
+    /* Form */
+
+    .property-form {
+        padding: 35px;
+    }
+
+    .property-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 25px 28px;
+    }
+
+    .property-field {
+        min-width: 0;
+    }
+
+    .property-field.full {
+        grid-column: 1 / -1;
+    }
+
+    .property-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #253047;
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+
+    .property-field label::after {
+        content: "";
+    }
+
+    .property-field .form-control {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 14px;
+        border: 1px solid #d7dce4;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #172033;
+        font-size: 0.94rem;
+        box-shadow: none;
+        transition: all 0.2s ease;
+    }
+
+    .property-field .form-control:hover {
+        border-color: #bfc6d1;
+    }
+
+    .property-field .form-control:focus {
+        border-color: #e2ae45;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(226, 174, 69, 0.14);
+    }
+
+    .property-field textarea.form-control {
+        min-height: 145px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .property-field input[type="number"].form-control {
+        appearance: auto;
+    }
+
+    /* Price field */
+
+    .price-input {
+        position: relative;
+    }
+
+    .price-symbol {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #697386;
+        font-size: 0.92rem;
+        font-weight: 700;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .price-input .form-control {
+        padding-left: 32px;
+    }
+
+    /* Validation */
+
+    .validation-summary {
+        background: #fff5f4;
+        border: 1px solid #f2c7c3;
+        border-radius: 9px;
+        padding: 13px 16px;
+        margin-bottom: 25px;
+        color: #9f2d25;
+        font-size: 0.88rem;
+    }
+
+    .field-validation-error {
+        display: block;
+        margin-top: 6px;
+        color: #b42318;
+        font-size: 0.78rem;
+    }
+
+    /* Footer of form */
+
+    .property-form-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #edf0f4;
+    }
+
+    /* Buttons */
+
+    .property-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 10px 21px;
+        border-radius: 9px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .property-btn-cancel {
+        background: #f0f2f5;
+        border-color: #e0e3e8;
+        color: #303949 !important;
+    }
+
+    .property-btn-cancel:hover {
+        background: #e4e7ec;
+        color: #172033 !important;
+    }
+
+    .property-btn-submit {
+        background: #e9b44c;
+        border-color: #e9b44c;
+        color: #172033 !important;
+        box-shadow: 0 4px 12px rgba(233, 180, 76, 0.2);
+    }
+
+    .property-btn-submit:hover {
+        background: #dca63e;
+        border-color: #dca63e;
+        color: #172033 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(233, 180, 76, 0.25);
+    }
+
+    /* Small information cards */
+
+    .property-hint {
+        margin-top: 8px;
+        color: #8a93a1;
+        font-size: 0.75rem;
+    }
+
+    /* Responsive */
+
+    @@media (max-width: 768px) {
+
+        .property-page {
+            padding: 30px 15px 50px;
+        }
+
+        .property-heading {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .property-heading h1 {
+            font-size: 1.8rem;
+        }
+
+        .property-back {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .property-card-top,
+        .property-form {
+            padding: 25px 20px;
+        }
+
+        .property-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .property-field.full {
+            grid-column: auto;
+        }
+
+        .property-form-footer {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .property-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="property-page">
+
+    <div class="property-container">
+
+        <!-- Page Header -->
+        <div class="property-heading">
+
+            <div class="property-heading-left">
+
+                <span class="property-eyebrow">
+                    PROPERTY MANAGEMENT
+                </span>
+
+                <h1>Add New Property</h1>
+
+                <p>
+                    Create a new accommodation property and provide
+                    the details guests will need.
+                </p>
+
             </div>
 
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+            <a asp-action="Index" class="property-back">
+                <span>←</span>
+                <span>Back to Properties</span>
+            </a>
+
+        </div>
+
+
+        <!-- Form Card -->
+        <div class="property-card">
+
+            <div class="property-card-top">
+
+                <h2 class="property-card-title">
+                    Property Information
+                </h2>
+
+                <p class="property-card-subtitle">
+                    Enter the basic details for the accommodation.
+                </p>
+
             </div>
 
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
 
-            <div class="form-group">
-                <label asp-for="MaximumGuests" class="control-label"></label>
-                <input asp-for="MaximumGuests" class="form-control" />
-                <span asp-validation-for="MaximumGuests" class="text-danger"></span>
-            </div>
+            <form asp-action="Create" class="property-form">
 
-            <div class="form-group">
-                <label asp-for="Bedrooms" class="control-label"></label>
-                <input asp-for="Bedrooms" class="form-control" />
-                <span asp-validation-for="Bedrooms" class="text-danger"></span>
-            </div>
+                <div asp-validation-summary="ModelOnly"
+                     class="validation-summary"></div>
 
-            <div class="form-group">
-                <label asp-for="Bathrooms" class="control-label"></label>
-                <input asp-for="Bathrooms" class="form-control" />
-                <span asp-validation-for="Bathrooms" class="text-danger"></span>
-            </div>
 
-            <div class="form-group">
-                <label asp-for="PricePerNight" class="control-label"></label>
-                <input asp-for="PricePerNight" class="form-control" />
-                <span asp-validation-for="PricePerNight" class="text-danger"></span>
-            </div>
+                <div class="property-grid">
 
-            <div class="form-group">
-                <label asp-for="Bookings" class="control-label"></label>
-                <input asp-for="Bookings" class="form-control" />
-                <span asp-validation-for="Bookings" class="text-danger"></span>
-            </div>
+                    <!-- Property Name -->
+                    <div class="property-field">
 
-            <div class="form-group">
-                <label asp-for="Availabilities" class="control-label"></label>
-                <input asp-for="Availabilities" class="form-control" />
-                <span asp-validation-for="Availabilities" class="text-danger"></span>
-            </div>
+                        <label asp-for="PropertyName">
+                            Property Name
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="PropertyAmenities" class="control-label"></label>
-                <input asp-for="PropertyAmenities" class="form-control" />
-                <span asp-validation-for="PropertyAmenities" class="text-danger"></span>
-            </div>
+                        <input asp-for="PropertyName"
+                               class="form-control"
+                               placeholder="e.g. Sunset Villa" />
 
-            <div class="form-group">
-                <label asp-for="FinancialTransactions" class="control-label"></label>
-                <input asp-for="FinancialTransactions" class="form-control" />
-                <span asp-validation-for="FinancialTransactions" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                        <span asp-validation-for="PropertyName"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Address -->
+                    <div class="property-field">
+
+                        <label asp-for="Address">
+                            Property Address
+                        </label>
+
+                        <input asp-for="Address"
+                               class="form-control"
+                               placeholder="e.g. 12 Beach Road, Durban" />
+
+                        <span asp-validation-for="Address"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Description -->
+                    <div class="property-field full">
+
+                        <label asp-for="Description">
+                            Property Description
+                        </label>
+
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  placeholder="Describe the property, its surroundings and what guests can expect..."></textarea>
+
+                        <span asp-validation-for="Description"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Bedrooms -->
+                    <div class="property-field">
+
+                        <label asp-for="Bedrooms">
+                            Bedrooms
+                        </label>
+
+                        <input asp-for="Bedrooms"
+                               type="number"
+                               min="0"
+                               class="form-control"
+                               placeholder="Number of bedrooms" />
+
+                        <span asp-validation-for="Bedrooms"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Bathrooms -->
+                    <div class="property-field">
+
+                        <label asp-for="Bathrooms">
+                            Bathrooms
+                        </label>
+
+                        <input asp-for="Bathrooms"
+                               type="number"
+                               min="0"
+                               class="form-control"
+                               placeholder="Number of bathrooms" />
+
+                        <span asp-validation-for="Bathrooms"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Maximum Guests -->
+                    <div class="property-field">
+
+                        <label asp-for="MaximumGuests">
+                            Maximum Guests
+                        </label>
+
+                        <input asp-for="MaximumGuests"
+                               type="number"
+                               min="1"
+                               class="form-control"
+                               placeholder="Maximum number of guests" />
+
+                        <span asp-validation-for="MaximumGuests"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Price -->
+                    <div class="property-field">
+
+                        <label asp-for="PricePerNight">
+                            Price Per Night
+                        </label>
+
+                        <div class="price-input">
+
+                            <span class="price-symbol">R</span>
+
+                            <input asp-for="PricePerNight"
+                                   type="number"
+                                   min="0"
+                                   step="0.01"
+                                   class="form-control"
+                                   placeholder="0.00" />
+
+                        </div>
+
+                        <span asp-validation-for="PricePerNight"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Form Buttons -->
+                <div class="property-form-footer">
+
+                    <a asp-action="Index"
+                       class="property-btn property-btn-cancel">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="property-btn property-btn-submit">
+                        Add Property
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,95 +1,116 @@
 @model IEnumerable<HomeAwayFromHome.Models.Property>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Properties";
 }
 
-<h1>Index</h1>
+<div class="management-page">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PropertyName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MaximumGuests)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Bedrooms)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Bathrooms)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PricePerNight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Bookings)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Availabilities)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PropertyAmenities)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FinancialTransactions)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.PropertyName)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.MaximumGuests)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Bedrooms)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Bathrooms)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.PricePerNight)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Bookings)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Availabilities)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.PropertyAmenities)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.FinancialTransactions)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.PropertyID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PropertyID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PropertyID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="management-header">
+        <div>
+            <span class="page-eyebrow">PROPERTY MANAGEMENT</span>
+            <h1>Properties</h1>
+            <p>Manage your accommodation properties and their details.</p>
+        </div>
+
+        <a asp-action="Create" class="btn-primary-custom">
+            <span>+</span> Add Property
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">⌂</div>
+            <h3>No properties yet</h3>
+            <p>Start by adding your first property.</p>
+            <a asp-action="Create" class="btn-primary-custom">Add Property</a>
+        </div>
+    }
+    else
+    {
+        <div class="property-grid">
+
+            @foreach (var item in Model)
+            {
+                <div class="property-card">
+
+                    <div class="property-card-top">
+                        <div class="property-icon">⌂</div>
+
+                        <div class="property-actions">
+                            <a asp-action="Details"
+                               asp-route-id="@item.PropertyID"
+                               title="View details">
+                                View
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="property-card-body">
+
+                        <h2>@item.PropertyName</h2>
+
+                        <p class="property-address">
+                            @item.Address
+                        </p>
+
+                        <p class="property-description">
+                            @item.Description
+                        </p>
+
+                        <div class="property-stats">
+
+                            <div>
+                                <strong>@item.Bedrooms</strong>
+                                <span>Bedrooms</span>
+                            </div>
+
+                            <div>
+                                <strong>@item.Bathrooms</strong>
+                                <span>Bathrooms</span>
+                            </div>
+
+                            <div>
+                                <strong>@item.MaximumGuests</strong>
+                                <span>Guests</span>
+                            </div>
+
+                        </div>
+
+                        <div class="property-price">
+                            <strong>R @item.PricePerNight.ToString("N2")</strong>
+                            <span>per night</span>
+                        </div>
+
+                    </div>
+
+                    <div class="property-card-footer">
+
+                        <a asp-action="Edit"
+                           asp-route-id="@item.PropertyID"
+                           class="action-edit">
+                            Edit
+                        </a>
+
+                        <a asp-action="Details"
+                           asp-route-id="@item.PropertyID"
+                           class="action-view">
+                            Details
+                        </a>
+
+                        <a asp-action="Delete"
+                           asp-route-id="@item.PropertyID"
+                           class="action-delete">
+                            Delete
+                        </a>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

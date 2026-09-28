@@ -1,94 +1,76 @@
 @model HomeAwayFromHome.Models.Property
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Property Details";
 }
 
-<h1>Details</h1>
+<div class="hafh-page">
 
-<div>
-    <h4>Property</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PropertyName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PropertyName)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaximumGuests)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaximumGuests)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Bedrooms)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Bedrooms)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Bathrooms)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Bathrooms)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PricePerNight)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PricePerNight)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Bookings)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Bookings)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Availabilities)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Availabilities)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PropertyAmenities)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PropertyAmenities)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FinancialTransactions)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FinancialTransactions)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.PropertyID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="hafh-detail-header">
+        <div>
+            <span class="hafh-eyebrow">PROPERTY</span>
+            <h1>@Model.PropertyName</h1>
+            <p>@Model.Address</p>
+        </div>
+
+        <div class="hafh-detail-actions">
+            <a asp-action="Edit" asp-route-id="@Model.PropertyID"
+               class="hafh-btn hafh-btn-gold">
+                Edit Property
+            </a>
+
+            <a asp-action="Index" class="hafh-btn hafh-btn-outline">
+                Back
+            </a>
+        </div>
+    </div>
+
+    <div class="hafh-detail-card">
+
+        <div class="hafh-detail-section">
+            <h3>Property Information</h3>
+
+            <div class="hafh-detail-grid">
+
+                <div>
+                    <span>Property Name</span>
+                    <strong>@Model.PropertyName</strong>
+                </div>
+
+                <div>
+                    <span>Address</span>
+                    <strong>@Model.Address</strong>
+                </div>
+
+                <div>
+                    <span>Bedrooms</span>
+                    <strong>@Model.Bedrooms</strong>
+                </div>
+
+                <div>
+                    <span>Bathrooms</span>
+                    <strong>@Model.Bathrooms</strong>
+                </div>
+
+                <div>
+                    <span>Maximum Guests</span>
+                    <strong>@Model.MaximumGuests</strong>
+                </div>
+
+                <div>
+                    <span>Price Per Night</span>
+                    <strong>R @Model.PricePerNight</strong>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="hafh-detail-section">
+            <h3>Description</h3>
+            <p class="hafh-description">
+                @Model.Description
+            </p>
+        </div>
+
+    </div>
 </div>

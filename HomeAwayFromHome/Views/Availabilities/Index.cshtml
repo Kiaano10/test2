@@ -1,59 +1,149 @@
 @model IEnumerable<HomeAwayFromHome.Models.Availability>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Availability";
 }
 
-<h1>Index</h1>
+<div class="management-page">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PropertyID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Property)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AvailableFrom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AvailableTo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.PropertyID)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Property)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.AvailableFrom)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.AvailableTo)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Status)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AvailabilityID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AvailabilityID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AvailabilityID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="management-header">
+
+        <div>
+            <span class="page-eyebrow">PROPERTY CALENDAR</span>
+            <h1>Availability</h1>
+            <p>Manage when your properties are available for booking.</p>
+        </div>
+
+        <a asp-action="Create" class="btn-primary-custom">
+            <span>+</span> Add Availability
+        </a>
+
+    </div>
+
+
+    <div class="summary-row">
+
+        <div class="summary-card">
+            <span class="summary-label">TOTAL RECORDS</span>
+            <strong>@Model.Count()</strong>
+        </div>
+
+        <div class="summary-card">
+            <span class="summary-label">AVAILABLE</span>
+            <strong>
+                @Model.Count(x => x.Status == "Available")
+            </strong>
+        </div>
+
+        <div class="summary-card">
+            <span class="summary-label">UNAVAILABLE</span>
+            <strong>
+                @Model.Count(x => x.Status != "Available")
+            </strong>
+        </div>
+
+    </div>
+
+
+    <div class="data-card">
+
+        <div class="data-card-header">
+
+            <div>
+                <h2>Availability Schedule</h2>
+                <p>Current availability records for your properties.</p>
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="modern-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Property</th>
+                        <th>Available From</th>
+                        <th>Available To</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    @item.Property?.PropertyName
+                                </strong>
+
+                                <small>
+                                    Property #@item.PropertyID
+                                </small>
+                            </td>
+
+                            <td>
+                                @item.AvailableFrom.ToString("dd MMM yyyy")
+                            </td>
+
+                            <td>
+                                @item.AvailableTo.ToString("dd MMM yyyy")
+                            </td>
+
+                            <td>
+
+                                @{
+                                    var statusClass =
+                                        item.Status?.ToLower() == "available"
+                                        ? "status-confirmed"
+                                        : "status-cancelled";
+                                }
+
+                                <span class="status-badge @statusClass">
+                                    @item.Status
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <div class="table-actions">
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.AvailabilityID">
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.AvailabilityID">
+                                        View
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.AvailabilityID"
+                                       class="danger-link">
+                                        Delete
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,251 +1,886 @@
-﻿@{
+﻿```cshtml
+@{
     ViewData["Title"] = "Home";
 }
 
-<section class="hero-section">
-    <div class="hero-overlay"></div>
+<style>
+    /* =========================================================
+       HOME PAGE
+       ========================================================= */
 
-    <div class="hero-content">
-        <div class="hero-logo">
-            <img src="~/Image/Logo.jpeg" alt="Home Away From Home Logo" />
-        </div>
+    .home-page {
+        margin: -1rem -0.75rem 0;
+        color: #172033;
+        background: #f8f6f2;
+    }
 
-        <span class="hero-tag">WELCOME TO HOME AWAY FROM HOME</span>
+    /* HERO
+       --------------------------------------------------------- */
 
-        <h1>
-            Your comfort.<br />
-            Your space.<br />
-            <span>Your home.</span>
-        </h1>
+    .home-hero {
+        position: relative;
+        min-height: 620px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        background:
+            linear-gradient(90deg,
+                rgba(8, 20, 38, 0.94) 0%,
+                rgba(8, 20, 38, 0.78) 42%,
+                rgba(8, 20, 38, 0.30) 75%,
+                rgba(8, 20, 38, 0.15) 100%),
+            url('/Image/Background.jpg') center / cover no-repeat;
+    }
 
-        <p>
-            Experience a comfortable and welcoming stay where
-            every detail is designed to make you feel at home.
-        </p>
+    .home-hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            transparent 70%,
+            rgba(8, 20, 38, 0.45) 100%
+        );
+        pointer-events: none;
+    }
 
-        <div class="hero-buttons">
-            <a asp-controller="Properties"
-               asp-action="Index"
-               class="btn btn-primary btn-lg">
-                Explore Our Property
-            </a>
+    .hero-inner {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 80px 35px;
+    }
 
-            <a href="#about"
-               class="btn btn-outline-light btn-lg">
-                Discover More
-            </a>
-        </div>
-    </div>
-</section>
+    .hero-copy {
+        max-width: 690px;
+    }
+
+    .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 22px;
+        color: #e9b44c;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+    }
+
+    .hero-eyebrow::before {
+        content: "";
+        width: 38px;
+        height: 2px;
+        background: #e9b44c;
+    }
+
+    .hero-title {
+        margin: 0;
+        color: #fff;
+        font-size: clamp(3rem, 6vw, 5.4rem);
+        line-height: 0.98;
+        font-weight: 800;
+        letter-spacing: -0.045em;
+    }
+
+    .hero-title span {
+        color: #e9b44c;
+    }
+
+    .hero-description {
+        max-width: 570px;
+        margin: 28px 0 34px;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 1.08rem;
+        line-height: 1.8;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .home-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        padding: 0 27px;
+        border-radius: 7px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+    .home-btn-primary {
+        color: #172033;
+        background: #e9b44c;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    .home-btn-primary:hover {
+        color: #172033;
+        background: #f3c969;
+        transform: translateY(-2px);
+    }
+
+    .home-btn-outline {
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(8px);
+    }
+
+    .home-btn-outline:hover {
+        color: #172033;
+        background: #fff;
+        transform: translateY(-2px);
+    }
+
+    /* FLOATING INFO CARD */
+
+    .hero-info-card {
+        position: absolute;
+        right: 7%;
+        bottom: 55px;
+        z-index: 3;
+        width: 270px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 14px;
+        color: #fff;
+        background: rgba(15, 29, 49, 0.72);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(14px);
+    }
+
+    .hero-info-card img {
+        width: 72px;
+        height: 72px;
+        margin-bottom: 18px;
+        border-radius: 10px;
+        object-fit: contain;
+        background: #fff;
+        padding: 6px;
+    }
+
+    .hero-info-card small {
+        display: block;
+        margin-bottom: 6px;
+        color: #e9b44c;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .hero-info-card strong {
+        display: block;
+        font-size: 1.25rem;
+    }
+
+    .hero-info-card p {
+        margin: 8px 0 0;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.88rem;
+        line-height: 1.6;
+    }
 
 
-<!-- INTRO -->
-<section id="about" class="intro-section">
-    <div class="container">
-        <div class="row align-items-center">
+    /* QUICK STATS
+       --------------------------------------------------------- */
 
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <span class="section-label">A PLACE TO BELONG</span>
+    .quick-stats {
+        position: relative;
+        z-index: 5;
+        margin-top: -42px;
+    }
 
-                <h2>
-                    More than a stay,
-                    <span>it's a feeling.</span>
-                </h2>
+    .stats-card {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        overflow: hidden;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 18px 50px rgba(22, 32, 51, 0.12);
+    }
 
-                <p>
-                    Home Away From Home provides guests with a comfortable
-                    and welcoming place to stay. Whether you are travelling
-                    for business, relaxation, or a special occasion, our
-                    goal is to make your stay simple, convenient and memorable.
-                </p>
+    .stat {
+        padding: 27px 30px;
+        border-right: 1px solid #e8e5df;
+    }
 
-                <p>
-                    From comfortable accommodation to useful amenities,
-                    everything is designed with our guests in mind.
-                </p>
+    .stat:last-child {
+        border-right: none;
+    }
 
-                <a asp-controller="Properties"
-                   asp-action="Index"
-                   class="text-link">
-                    Explore the property →
-                </a>
-            </div>
+    .stat-number {
+        display: block;
+        margin-bottom: 5px;
+        color: #b98422;
+        font-size: 1.5rem;
+        font-weight: 800;
+    }
 
-            <div class="col-lg-6">
-                <div class="welcome-card">
-                    <div class="welcome-card-content">
-                        <span>HOME AWAY FROM HOME</span>
-                        <h3>Comfort<br />meets convenience.</h3>
-                        <p>
-                            A welcoming space designed around your needs.
-                        </p>
-                    </div>
+    .stat-title {
+        display: block;
+        margin-bottom: 3px;
+        color: #172033;
+        font-weight: 700;
+    }
+
+    .stat-text {
+        color: #777d88;
+        font-size: 0.87rem;
+    }
+
+
+    /* INTRO
+       --------------------------------------------------------- */
+
+    .intro-section {
+        padding: 110px 0 100px;
+        background: #f8f6f2;
+    }
+
+    .section-eyebrow {
+        display: block;
+        margin-bottom: 15px;
+        color: #b98422;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .section-title {
+        margin: 0 0 22px;
+        color: #172033;
+        font-size: clamp(2.1rem, 4vw, 3.5rem);
+        line-height: 1.08;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+    }
+
+    .section-title span {
+        display: block;
+        color: #b98422;
+    }
+
+    .section-text {
+        max-width: 600px;
+        color: #626976;
+        font-size: 1rem;
+        line-height: 1.85;
+    }
+
+    .intro-link {
+        display: inline-flex;
+        margin-top: 18px;
+        color: #172033;
+        font-weight: 800;
+        text-decoration: none;
+        border-bottom: 2px solid #e9b44c;
+        padding-bottom: 5px;
+    }
+
+    .intro-link:hover {
+        color: #b98422;
+    }
+
+    .intro-visual {
+        position: relative;
+        min-height: 400px;
+        margin-left: 25px;
+    }
+
+    .intro-image {
+        position: absolute;
+        inset: 0 35px 35px 0;
+        overflow: hidden;
+        border-radius: 18px;
+        background:
+            linear-gradient(rgba(8, 20, 38, 0.18), rgba(8, 20, 38, 0.18)),
+            url('/Image/Background.jpg') center / cover;
+        box-shadow: 0 25px 55px rgba(23, 32, 51, 0.18);
+    }
+
+    .intro-image::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            135deg,
+            rgba(23, 32, 51, 0.05),
+            rgba(23, 32, 51, 0.55)
+        );
+    }
+
+    .intro-badge {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        width: 190px;
+        padding: 25px;
+        border-radius: 14px;
+        background: #172033;
+        color: #fff;
+        box-shadow: 0 20px 40px rgba(23, 32, 51, 0.22);
+    }
+
+    .intro-badge strong {
+        display: block;
+        margin-bottom: 7px;
+        color: #e9b44c;
+        font-size: 1.8rem;
+    }
+
+    .intro-badge span {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.84rem;
+        line-height: 1.5;
+    }
+
+
+    /* FEATURES
+       --------------------------------------------------------- */
+
+    .features-section {
+        padding: 100px 0;
+        background: #172033;
+    }
+
+    .features-section .section-eyebrow {
+        color: #e9b44c;
+    }
+
+    .features-section .section-title {
+        color: #fff;
+        text-align: center;
+    }
+
+    .features-section .section-title span {
+        color: #e9b44c;
+    }
+
+    .features-intro {
+        max-width: 650px;
+        margin: 0 auto 55px;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: center;
+        line-height: 1.8;
+    }
+
+    .feature-card {
+        height: 100%;
+        padding: 35px 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.055);
+        transition: all 0.25s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-7px);
+        border-color: rgba(233, 180, 76, 0.5);
+        background: rgba(255, 255, 255, 0.09);
+    }
+
+    .feature-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 43px;
+        height: 43px;
+        margin-bottom: 24px;
+        border-radius: 50%;
+        color: #172033;
+        background: #e9b44c;
+        font-weight: 800;
+    }
+
+    .feature-card h3 {
+        margin-bottom: 13px;
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: 750;
+    }
+
+    .feature-card p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.62);
+        line-height: 1.75;
+        font-size: 0.92rem;
+    }
+
+
+    /* CTA
+       --------------------------------------------------------- */
+
+    .home-cta {
+        padding: 100px 0;
+        background: #f8f6f2;
+    }
+
+    .cta-card {
+        position: relative;
+        overflow: hidden;
+        padding: 65px;
+        border-radius: 18px;
+        background: #e9b44c;
+        box-shadow: 0 25px 55px rgba(23, 32, 51, 0.14);
+    }
+
+    .cta-card::before,
+    .cta-card::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid rgba(23, 32, 51, 0.12);
+    }
+
+    .cta-card::before {
+        width: 280px;
+        height: 280px;
+        right: -100px;
+        top: -120px;
+    }
+
+    .cta-card::after {
+        width: 170px;
+        height: 170px;
+        right: 70px;
+        bottom: -100px;
+    }
+
+    .cta-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .cta-label {
+        display: block;
+        margin-bottom: 12px;
+        color: rgba(23, 32, 51, 0.65);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+    }
+
+    .cta-card h2 {
+        max-width: 620px;
+        margin: 0 0 15px;
+        color: #172033;
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        font-weight: 800;
+        letter-spacing: -0.035em;
+    }
+
+    .cta-card p {
+        max-width: 600px;
+        margin-bottom: 28px;
+        color: rgba(23, 32, 51, 0.72);
+        line-height: 1.7;
+    }
+
+    .cta-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 50px;
+        padding: 0 25px;
+        border-radius: 7px;
+        color: #fff;
+        background: #172033;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+    .cta-btn:hover {
+        color: #fff;
+        background: #273653;
+        transform: translateY(-2px);
+    }
+
+
+    /* RESPONSIVE
+       --------------------------------------------------------- */
+
+    
+
+        .hero-info-card {
+            display: none;
+        }
+
+        .home-hero {
+            min-height: 570px;
+        }
+
+        .intro-visual {
+            margin-left: 0;
+            margin-top: 45px;
+        }
+
+        .cta-card {
+            padding: 45px 35px;
+        }
+    
+
+   
+
+        .hero-inner {
+            padding: 70px 25px;
+        }
+
+        .home-hero {
+            min-height: 600px;
+        }
+
+        .hero-title {
+            font-size: 3.25rem;
+        }
+
+        .hero-description {
+            font-size: 0.96rem;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .home-btn {
+            width: 100%;
+        }
+
+        .quick-stats {
+            margin: 0 18px;
+            margin-top: -30px;
+        }
+
+        .stats-card {
+            grid-template-columns: 1fr;
+        }
+
+        .stat {
+            border-right: none;
+            border-bottom: 1px solid #e8e5df;
+        }
+
+        .stat:last-child {
+            border-bottom: none;
+        }
+
+        .intro-section,
+        .features-section,
+        .home-cta {
+            padding: 75px 0;
+        }
+
+        .intro-visual {
+            min-height: 300px;
+        }
+
+        .intro-badge {
+            width: 160px;
+            padding: 20px;
+        }
+
+        .cta-card {
+            padding: 40px 25px;
+        }
+    
+</style>
+
+
+<div class="home-page">
+
+    <!-- HERO -->
+    <section class="home-hero">
+
+        <div class="hero-inner">
+            <div class="hero-copy">
+
+                <div class="hero-eyebrow">
+                    Welcome to Home Away From Home
                 </div>
+
+                <h1 class="hero-title">
+                    A place to stay.<br />
+                    A place to <span>belong.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Discover a comfortable and welcoming space designed
+                    to make your stay feel effortless. Whether you're
+                    travelling, working or simply taking a break,
+                    we've created a place you can call home.
+                </p>
+
+                <div class="hero-actions">
+
+                    <a asp-controller="Properties"
+                       asp-action="Index"
+                       class="home-btn home-btn-primary">
+                        Explore Property
+                    </a>
+
+                    <a href="#about"
+                       class="home-btn home-btn-outline">
+                        Learn More
+                    </a>
+
+                </div>
+
             </div>
-
         </div>
-    </div>
-</section>
 
+        <div class="hero-info-card">
 
-<!-- FEATURES -->
-<section class="features-section">
-    <div class="container">
+            <img src="~/Image/Logo.jpeg"
+                 alt="Home Away From Home" />
 
-        <div class="section-heading text-center">
-            <span class="section-label">WHY STAY WITH US?</span>
+            <small>Home Away From Home</small>
 
-            <h2>
-                Everything you need
-                <span>for a comfortable stay.</span>
-            </h2>
+            <strong>Comfort. Convenience. Connection.</strong>
 
             <p>
-                We focus on the things that make a stay convenient,
-                comfortable and enjoyable.
+                Everything you need for a relaxing and memorable stay.
             </p>
+
         </div>
 
-        <div class="row g-4 mt-3">
+    </section>
 
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        🏠
-                    </div>
 
-                    <h3>Comfortable Space</h3>
+    <!-- QUICK STATS -->
+    <section class="quick-stats">
+        <div class="container">
 
-                    <p>
-                        Enjoy a welcoming property designed to give
-                        you the comfort and privacy you need.
-                    </p>
+            <div class="stats-card">
+
+                <div class="stat">
+                    <span class="stat-number">01</span>
+                    <span class="stat-title">Comfortable Living</span>
+                    <span class="stat-text">
+                        A welcoming space built around your needs.
+                    </span>
                 </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        ✨
-                    </div>
-
-                    <h3>Quality Amenities</h3>
-
-                    <p>
-                        Access useful amenities designed to make
-                        your stay easier and more enjoyable.
-                    </p>
+                <div class="stat">
+                    <span class="stat-number">02</span>
+                    <span class="stat-title">Useful Amenities</span>
+                    <span class="stat-text">
+                        Practical features to make your stay easier.
+                    </span>
                 </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        📅
-                    </div>
-
-                    <h3>Simple Booking</h3>
-
-                    <p>
-                        Submit a booking request and keep track
-                        of your accommodation information with ease.
-                    </p>
+                <div class="stat">
+                    <span class="stat-number">03</span>
+                    <span class="stat-title">Simple Booking</span>
+                    <span class="stat-text">
+                        Explore, request and manage your stay with ease.
+                    </span>
                 </div>
+
             </div>
 
         </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- BOOKING -->
-<section class="booking-section">
-    <div class="container">
-        <div class="booking-card">
+    <!-- ABOUT -->
+    <section id="about" class="intro-section">
 
-            <div>
-                <span class="section-label light">
-                    READY FOR YOUR NEXT STAY?
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-6">
+
+                    <span class="section-eyebrow">
+                        A PLACE TO BELONG
+                    </span>
+
+                    <h2 class="section-title">
+                        More than somewhere to sleep.
+                        <span>It's somewhere to feel at home.</span>
+                    </h2>
+
+                    <p class="section-text">
+                        Home Away From Home provides guests with a comfortable
+                        and welcoming place to stay. Whether you're travelling
+                        for business, relaxation or a special occasion, our
+                        goal is to make your experience simple, convenient
+                        and memorable.
+                    </p>
+
+                    <p class="section-text">
+                        From the property itself to the amenities and booking
+                        experience, everything is designed with the guest in mind.
+                    </p>
+
+                    <a asp-controller="Properties"
+                       asp-action="Index"
+                       class="intro-link">
+                        Explore the property&nbsp; →
+                    </a>
+
+                </div>
+
+                <div class="col-lg-6">
+
+                    <div class="intro-visual">
+
+                        <div class="intro-image"></div>
+
+                        <div class="intro-badge">
+                            <strong>HOME</strong>
+                            <span>
+                                Comfort, privacy and convenience
+                                in one welcoming space.
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FEATURES -->
+    <section class="features-section">
+
+        <div class="container">
+
+            <div class="text-center">
+
+                <span class="section-eyebrow">
+                    WHY CHOOSE US
                 </span>
 
-                <h2>
-                    Find your home
-                    <span>away from home.</span>
+                <h2 class="section-title">
+                    Designed around
+                    <span>your stay.</span>
                 </h2>
 
-                <p>
-                    Explore our property, check availability and
-                    submit your booking request today.
+                <p class="features-intro">
+                    We've kept the experience simple. Discover the property,
+                    find what you need and enjoy a comfortable place to stay.
                 </p>
+
             </div>
 
-            <div>
-                <a asp-controller="Properties"
-                   asp-action="Index"
-                   class="btn btn-light btn-lg">
-                    View Property
-                </a>
-            </div>
 
-        </div>
-    </div>
-</section>
+            <div class="row g-4">
+
+                <div class="col-md-4">
+
+                    <div class="feature-card">
+
+                        <span class="feature-number">01</span>
+
+                        <h3>Comfortable Space</h3>
+
+                        <p>
+                            Enjoy a welcoming environment that gives you
+                            the space, privacy and comfort you need during
+                            your stay.
+                        </p>
+
+                    </div>
+
+                </div>
 
 
-<!-- CUSTOMER EXPERIENCE -->
-<section class="experience-section">
-    <div class="container">
+                <div class="col-md-4">
 
-        <div class="text-center">
-            <span class="section-label">YOUR STAY MATTERS</span>
+                    <div class="feature-card">
 
-            <h2>
-                Built around
-                <span>our guests.</span>
-            </h2>
+                        <span class="feature-number">02</span>
 
-            <p class="experience-intro">
-                From discovering the property to managing your booking,
-                Home Away From Home gives guests a simple way to manage
-                their stay.
-            </p>
-        </div>
+                        <h3>Quality Amenities</h3>
 
-        <div class="experience-grid">
+                        <p>
+                            Access practical amenities designed to make
+                            everyday living easier and your stay more enjoyable.
+                        </p>
 
-            <div>
-                <strong>01</strong>
-                <h3>Discover</h3>
-                <p>
-                    Learn about our property, features and amenities.
-                </p>
-            </div>
+                    </div>
 
-            <div>
-                <strong>02</strong>
-                <h3>Request</h3>
-                <p>
-                    Submit a booking request for your preferred stay.
-                </p>
-            </div>
+                </div>
 
-            <div>
-                <strong>03</strong>
-                <h3>Stay</h3>
-                <p>
-                    Enjoy a comfortable and welcoming experience.
-                </p>
-            </div>
 
-            <div>
-                <strong>04</strong>
-                <h3>Review</h3>
-                <p>
-                    Share your experience after your stay.
-                </p>
+                <div class="col-md-4">
+
+                    <div class="feature-card">
+
+                        <span class="feature-number">03</span>
+
+                        <h3>Easy Booking</h3>
+
+                        <p>
+                            Explore the available property and submit your
+                            booking request through a straightforward process.
+                        </p>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
-    </div>
-</section>
+    </section>
+
+
+    <!-- CTA -->
+    <section class="home-cta">
+
+        <div class="container">
+
+            <div class="cta-card">
+
+                <div class="cta-content">
+
+                    <span class="cta-label">
+                        READY FOR YOUR NEXT STAY?
+                    </span>
+
+                    <h2>
+                        Find your home away from home.
+                    </h2>
+
+                    <p>
+                        Take a look at our property and discover a space
+                        designed to make your stay comfortable, convenient
+                        and memorable.
+                    </p>
+
+                    <a asp-controller="Properties"
+                       asp-action="Index"
+                       class="cta-btn">
+                        View Property&nbsp; →
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+```
