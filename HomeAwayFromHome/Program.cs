@@ -28,7 +28,11 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// Register services
 builder.Services.AddScoped<IPropertyService, PropertyService>();
+builder.Services.AddScoped<IAmenityService, AmenityService>();
+builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
+
 
 var app = builder.Build();
 
