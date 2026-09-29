@@ -81,6 +81,24 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    foreach (var role in new[] { "Customer", "Owner", "Admin" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            var result = await roleManager.CreateAsync(new IdentityRole(role));
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException($"Could not create role {role}: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+        }
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
