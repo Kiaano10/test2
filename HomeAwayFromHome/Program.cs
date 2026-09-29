@@ -39,6 +39,7 @@ public partial class Program
         builder.Services.AddScoped<IBookingService, BookingService>();
         builder.Services.AddScoped<IReviewService, ReviewService>();
         builder.Services.AddScoped<IFinancialReportService, FinancialReportService>();
+        builder.Services.AddScoped<PropertyApiService>();
         builder.Services.AddHttpClient("HomeAwayFromHomeAPI", client =>
         {
             client.BaseAddress = new Uri("https://localhost:7243/");
