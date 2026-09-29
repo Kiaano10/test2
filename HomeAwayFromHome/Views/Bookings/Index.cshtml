@@ -2,152 +2,568 @@
 
 @{
     ViewData["Title"] = "Bookings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="management-page">
+<style>
+    .bookings-page {
+        min-height: calc(100vh - 80px);
+        background: #f5f6f8;
+        padding: 45px 25px 70px;
+    }
 
-    <div class="management-header">
-        <div>
-            <span class="page-eyebrow">RESERVATION MANAGEMENT</span>
-            <h1>Bookings</h1>
-            <p>View and manage guest reservations.</p>
-        </div>
+    .bookings-container {
+        max-width: 1250px;
+        margin: 0 auto;
+    }
 
-        <a asp-action="Create" class="btn-primary-custom">
-            <span>+</span> New Booking
-        </a>
-    </div>
+    .bookings-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
 
-    <div class="summary-row">
+    .bookings-eyebrow {
+        display: block;
+        color: #b98728;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin-bottom: 7px;
+    }
 
-        <div class="summary-card">
-            <span class="summary-label">TOTAL BOOKINGS</span>
-            <strong>@Model.Count()</strong>
-        </div>
+    .bookings-header h1 {
+        margin: 0;
+        color: #172033;
+        font-size: 2.15rem;
+        font-weight: 750;
+    }
 
-        <div class="summary-card">
-            <span class="summary-label">PENDING</span>
-            <strong>
-                @Model.Count(x => x.Status == "Pending")
-            </strong>
-        </div>
+    .bookings-header p {
+        margin: 8px 0 0;
+        color: #697386;
+    }
 
-        <div class="summary-card">
-            <span class="summary-label">CONFIRMED</span>
-            <strong>
-                @Model.Count(x => x.Status == "Confirmed")
-            </strong>
-        </div>
+    .booking-new-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 12px 20px;
+        background: #e9b44c;
+        color: #172033 !important;
+        border-radius: 9px;
+        text-decoration: none !important;
+        font-size: .88rem;
+        font-weight: 750;
+        border: 1px solid #e9b44c;
+        transition: .2s ease;
+    }
 
-    </div>
+    .booking-new-btn:hover {
+        background: #dca63e;
+        border-color: #dca63e;
+        transform: translateY(-1px);
+    }
 
-    <div class="data-card">
+    .booking-new-btn span {
+        font-size: 1.15rem;
+        line-height: 1;
+    }
 
-        <div class="data-card-header">
+    .booking-summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .summary-card {
+        background: #fff;
+        border: 1px solid #e3e7ec;
+        border-radius: 14px;
+        padding: 22px 24px;
+        box-shadow: 0 7px 22px rgba(23, 32, 51, .045);
+    }
+
+    .summary-label {
+        display: block;
+        color: #7a8391;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+        margin-bottom: 8px;
+    }
+
+    .summary-card strong {
+        color: #172033;
+        font-size: 1.65rem;
+        font-weight: 750;
+    }
+
+    .bookings-card {
+        background: #fff;
+        border: 1px solid #e3e7ec;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(23, 32, 51, .055);
+    }
+
+    .bookings-card-header {
+        padding: 25px 28px;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .bookings-card-header h2 {
+        margin: 0;
+        color: #172033;
+        font-size: 1.08rem;
+        font-weight: 720;
+    }
+
+    .bookings-card-header p {
+        margin: 5px 0 0;
+        color: #7a8391;
+        font-size: .84rem;
+    }
+
+    .bookings-table-wrap {
+        overflow-x: auto;
+    }
+
+    .bookings-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 950px;
+    }
+
+    .bookings-table th {
+        padding: 14px 20px;
+        background: #fafbfc;
+        border-bottom: 1px solid #e7eaf0;
+        color: #747d8c;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .bookings-table td {
+        padding: 19px 20px;
+        border-bottom: 1px solid #edf0f3;
+        color: #3e4757;
+        font-size: .87rem;
+        vertical-align: middle;
+    }
+
+    .bookings-table tbody tr {
+        transition: background .15s ease;
+    }
+
+    .bookings-table tbody tr:hover {
+        background: #fbfcfd;
+    }
+
+    .bookings-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .booking-number {
+        display: block;
+        color: #172033;
+        font-weight: 750;
+    }
+
+    .booking-created {
+        display: block;
+        margin-top: 4px;
+        color: #89919e;
+        font-size: .73rem;
+    }
+
+    .property-name {
+        color: #172033;
+        font-weight: 700;
+    }
+
+    .date-range {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .date-arrow {
+        color: #b98728;
+        font-weight: 700;
+    }
+
+    .booking-total {
+        color: #172033;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: .72rem;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .status-pending {
+        background: #fff3d8;
+        color: #8b6417;
+    }
+
+    .status-confirmed {
+        background: #e5f5eb;
+        color: #277346;
+    }
+
+    .status-cancelled {
+        background: #fce9e7;
+        color: #a83229;
+    }
+
+    .status-completed {
+        background: #e9edf5;
+        color: #46546b;
+    }
+
+    .booking-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .booking-action {
+        padding: 7px 11px;
+        border: 1px solid #dce1e8;
+        border-radius: 7px;
+        background: #fff;
+        color: #3b4556 !important;
+        text-decoration: none !important;
+        font-size: .74rem;
+        font-weight: 700;
+        transition: .18s ease;
+    }
+
+    .booking-action:hover {
+        background: #172033;
+        border-color: #172033;
+        color: #fff !important;
+    }
+
+    .booking-action.delete:hover {
+        background: #b42318;
+        border-color: #b42318;
+    }
+
+    .empty-bookings {
+        padding: 65px 25px;
+        text-align: center;
+    }
+
+    .empty-bookings h3 {
+        margin: 0 0 8px;
+        color: #172033;
+    }
+
+    .empty-bookings p {
+        margin: 0 0 20px;
+        color: #7a8391;
+    }
+
+    @@media (max-width: 800px) {
+
+        .bookings-page {
+            padding: 30px 15px 50px;
+        }
+
+        .bookings-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .booking-new-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .booking-summary {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="bookings-page">
+
+    <div class="bookings-container">
+
+        <div class="bookings-header">
+
             <div>
-                <h2>Recent Bookings</h2>
-                <p>All reservations currently recorded in the system.</p>
+                <span class="bookings-eyebrow">
+                    RESERVATION MANAGEMENT
+                </span>
+
+                <h1>Bookings</h1>
+
+                <p>
+                    View and manage guest reservations.
+                </p>
             </div>
+
+            <a asp-action="Create"
+               class="booking-new-btn">
+                <span>+</span>
+                New Booking
+            </a>
+
         </div>
 
-        <div class="table-responsive">
 
-            <table class="modern-table">
+        <!-- SUMMARY -->
 
-                <thead>
-                    <tr>
-                        <th>Booking</th>
-                        <th>Property</th>
-                        <th>Stay</th>
-                        <th>Guests</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                </thead>
+        <div class="booking-summary">
 
-                <tbody>
+            <div class="summary-card">
+                <span class="summary-label">
+                    TOTAL BOOKINGS
+                </span>
 
-                    @foreach (var item in Model)
-                    {
-                        <tr>
+                <strong>
+                    @Model.Count()
+                </strong>
+            </div>
 
-                            <td>
-                                <span class="table-id">
-                                    #@item.BookingID
-                                </span>
-                                <small>
-                                    @item.CreatedAt.ToString("dd MMM yyyy")
-                                </small>
-                            </td>
 
-                            <td>
-                                <strong>
-                                    @item.Property?.PropertyName
-                                </strong>
-                            </td>
+            <div class="summary-card">
+                <span class="summary-label">
+                    PENDING
+                </span>
 
-                            <td>
-                                <div class="date-range">
-                                    <span>
-                                        @item.CheckInDate.ToString("dd MMM yyyy")
-                                    </span>
-                                    <span class="date-arrow">→</span>
-                                    <span>
-                                        @item.CheckOutDate.ToString("dd MMM yyyy")
-                                    </span>
-                                </div>
-                            </td>
+                <strong>
+                    @Model.Count(x =>
+                        x.Status == "Pending")
+                </strong>
+            </div>
 
-                            <td>
-                                @item.NumberOfGuests
-                            </td>
 
-                            <td>
-                                <strong>
-                                    R @item.TotalAmount.ToString("N2")
-                                </strong>
-                            </td>
+            <div class="summary-card">
+                <span class="summary-label">
+                    CONFIRMED
+                </span>
 
-                            <td>
-                                @{
-                                    var statusClass =
-                                        item.Status?.ToLower() switch
-                                        {
-                                            "confirmed" => "status-confirmed",
-                                            "cancelled" => "status-cancelled",
-                                            "completed" => "status-completed",
-                                            _ => "status-pending"
-                                        };
-                                }
+                <strong>
+                    @Model.Count(x =>
+                        x.Status == "Confirmed")
+                </strong>
+            </div>
 
-                                <span class="status-badge @statusClass">
-                                    @item.Status
-                                </span>
-                            </td>
+        </div>
 
-                            <td>
-                                <div class="table-actions">
 
-                                    <a asp-action="Details"
-                                       asp-route-id="@item.BookingID">
-                                        View
-                                    </a>
+        <!-- BOOKINGS TABLE -->
 
-                                    <a asp-action="Edit"
-                                       asp-route-id="@item.BookingID">
-                                        Edit
-                                    </a>
+        <div class="bookings-card">
 
-                                </div>
-                            </td>
+            <div class="bookings-card-header">
 
-                        </tr>
-                    }
+                <h2>
+                    All Bookings
+                </h2>
 
-                </tbody>
+                <p>
+                    Reservations currently recorded in the system.
+                </p>
 
-            </table>
+            </div>
+
+
+            @if (Model.Any())
+            {
+                <div class="bookings-table-wrap">
+
+                    <table class="bookings-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Booking</th>
+                                <th>Property</th>
+                                <th>Stay</th>
+                                <th>Guests</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <span class="booking-number">
+                                            #@item.BookingID
+                                        </span>
+
+                                        <span class="booking-created">
+                                            @item.CreatedAt.ToString(
+                                                "dd MMM yyyy"
+                                            )
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="property-name">
+                                            @(item.Property?.PropertyName
+                                                ?? "Property unavailable")
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="date-range">
+
+                                            <span>
+                                                @item.CheckInDate.ToString(
+                                                    "dd MMM yyyy"
+                                                )
+                                            </span>
+
+                                            <span class="date-arrow">
+                                                →
+                                            </span>
+
+                                            <span>
+                                                @item.CheckOutDate.ToString(
+                                                    "dd MMM yyyy"
+                                                )
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+                                        @item.NumberOfGuests
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="booking-total">
+                                            R @item.TotalAmount.ToString("N2")
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        @{
+                                            var statusClass =
+                                                item.Status?.ToLower() switch
+                                                {
+                                                    "confirmed" =>
+                                                        "status-confirmed",
+
+                                                    "cancelled" =>
+                                                        "status-cancelled",
+
+                                                    "completed" =>
+                                                        "status-completed",
+
+                                                    _ =>
+                                                        "status-pending"
+                                                };
+                                        }
+
+                                        <span class="status-badge @statusClass">
+                                            @item.Status
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="booking-actions">
+
+                                            <a asp-action="Details"
+                                               asp-route-bookingid="@item.BookingID"
+                                               class="booking-action">
+                                                View
+                                            </a>
+
+                                            <a asp-action="Edit"
+                                               asp-route-bookingid="@item.BookingID"
+                                               class="booking-action">
+                                                Edit
+                                            </a>
+
+                                            <a asp-action="Delete"
+                                               asp-route-bookingid="@item.BookingID"
+                                               class="booking-action delete">
+                                                Delete
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="empty-bookings">
+
+                    <h3>
+                        No bookings yet
+                    </h3>
+
+                    <p>
+                        Create your first booking to see it here.
+                    </p>
+
+                    <a asp-action="Create"
+                       class="booking-new-btn">
+                        <span>+</span>
+                        Create Booking
+                    </a>
+
+                </div>
+            }
 
         </div>
 

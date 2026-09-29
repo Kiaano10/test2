@@ -1,114 +1,298 @@
 @model HomeAwayFromHome.Models.Booking
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Booking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Delete</h1>
+<style>
+    .delete-page {
+        min-height: calc(100vh - 80px);
+        background: #f5f6f8;
+        padding: 60px 25px;
+    }
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>HomeAwayFromHome.Models.Booking</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserID)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PropertyID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PropertyID)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Property)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Property)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CheckInDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CheckInDate)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CheckOutDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CheckOutDate)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumberOfGuests)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumberOfGuests)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalAmount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalAmount)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Reviews)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Reviews)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FinancialTransactions)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FinancialTransactions)
-        </dd>
-    </dl>
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="BookingID" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    .delete-container {
+        max-width: 650px;
+        margin: 0 auto;
+    }
+
+    .delete-card {
+        background: #fff;
+        border: 1px solid #e4e7ec;
+        border-radius: 18px;
+        padding: 45px;
+        box-shadow: 0 12px 35px rgba(23,32,51,.08);
+        text-align: center;
+    }
+
+    .delete-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #fce8e6;
+        color: #b42318;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+        font-weight: 800;
+    }
+
+    .delete-eyebrow {
+        color: #b42318;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+    }
+
+    .delete-card h1 {
+        margin: 10px 0;
+        color: #172033;
+        font-size: 2rem;
+        font-weight: 750;
+    }
+
+    .delete-message {
+        color: #697386;
+        line-height: 1.7;
+        margin: 0 0 30px;
+    }
+
+    .delete-info {
+        background: #f7f8fa;
+        border-radius: 12px;
+        padding: 20px 22px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+    .delete-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 12px 0;
+        border-bottom: 1px solid #e7e9ed;
+    }
+
+    .delete-row:last-child {
+        border-bottom: none;
+    }
+
+    .delete-row span {
+        color: #7b8491;
+        font-size: .8rem;
+    }
+
+    .delete-row strong {
+        color: #172033;
+        text-align: right;
+    }
+
+    .delete-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .delete-btn {
+        min-height: 46px;
+        padding: 10px 22px;
+        border-radius: 9px;
+        font-weight: 700;
+        border: 1px solid transparent;
+        cursor: pointer;
+        text-decoration: none !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .delete-cancel {
+        background: #f0f2f5;
+        border-color: #e0e3e8;
+        color: #303949 !important;
+    }
+
+    .delete-confirm {
+        background: #b42318;
+        border-color: #b42318;
+        color: #fff !important;
+    }
+
+    .delete-confirm:hover {
+        background: #8f1c13;
+        border-color: #8f1c13;
+    }
+
+    @@media (max-width: 600px) {
+
+        .delete-page {
+            padding: 30px 15px;
+        }
+
+        .delete-card {
+            padding: 30px 20px;
+        }
+
+        .delete-actions {
+            flex-direction: column-reverse;
+        }
+
+        .delete-btn {
+            width: 100%;
+        }
+
+        .delete-row {
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .delete-row strong {
+            text-align: left;
+        }
+    }
+</style>
+
+
+<div class="delete-page">
+
+    <div class="delete-container">
+
+        <div class="delete-card">
+
+            <div class="delete-icon">
+                !
+            </div>
+
+            <span class="delete-eyebrow">
+                DELETE BOOKING
+            </span>
+
+            <h1>
+                Delete Booking?
+            </h1>
+
+            <p class="delete-message">
+                Are you sure you want to permanently delete this
+                booking? This action cannot be undone.
+            </p>
+
+
+            <div class="delete-info">
+
+                <div class="delete-row">
+
+                    <span>
+                        Booking
+                    </span>
+
+                    <strong>
+                        #@Model.BookingID
+                    </strong>
+
+                </div>
+
+
+                <div class="delete-row">
+
+                    <span>
+                        Property
+                    </span>
+
+                    <strong>
+                        @(Model.Property?.PropertyName
+                            ?? "Property unavailable")
+                    </strong>
+
+                </div>
+
+
+                <div class="delete-row">
+
+                    <span>
+                        Check-in
+                    </span>
+
+                    <strong>
+                        @Model.CheckInDate.ToString(
+                            "dd MMM yyyy"
+                        )
+                    </strong>
+
+                </div>
+
+
+                <div class="delete-row">
+
+                    <span>
+                        Check-out
+                    </span>
+
+                    <strong>
+                        @Model.CheckOutDate.ToString(
+                            "dd MMM yyyy"
+                        )
+                    </strong>
+
+                </div>
+
+
+                <div class="delete-row">
+
+                    <span>
+                        Guests
+                    </span>
+
+                    <strong>
+                        @Model.NumberOfGuests
+                    </strong>
+
+                </div>
+
+
+                <div class="delete-row">
+
+                    <span>
+                        Total Amount
+                    </span>
+
+                    <strong>
+                        R @Model.TotalAmount.ToString("N2")
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <form asp-action="Delete"
+                  method="post">
+
+                <input type="hidden"
+                       name="bookingid"
+                       value="@Model.BookingID" />
+
+
+                <div class="delete-actions">
+
+                    <a asp-action="Index"
+                       class="delete-btn delete-cancel">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="delete-btn delete-confirm">
+                        Delete Booking
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
 </div>

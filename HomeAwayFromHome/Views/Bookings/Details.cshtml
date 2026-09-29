@@ -1,101 +1,378 @@
 @model HomeAwayFromHome.Models.Booking
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Booking Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<style>
+    .details-page {
+        min-height: calc(100vh - 80px);
+        background: #f5f6f8;
+        padding: 50px 25px 70px;
+    }
 
-<div>
-    <h4>Booking</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserID)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PropertyID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PropertyID)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Property)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Property)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CheckInDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CheckInDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CheckOutDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CheckOutDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumberOfGuests)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumberOfGuests)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalAmount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalAmount)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Reviews)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Reviews)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FinancialTransactions)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FinancialTransactions)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.BookingID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    .details-container {
+        max-width: 950px;
+        margin: 0 auto;
+    }
+
+    .details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .details-eyebrow {
+        color: #b98728;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+    }
+
+    .details-header h1 {
+        margin: 8px 0;
+        color: #172033;
+        font-size: 2.15rem;
+        font-weight: 750;
+    }
+
+    .details-header p {
+        margin: 0;
+        color: #697386;
+    }
+
+    .details-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .details-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 45px;
+        padding: 10px 19px;
+        border-radius: 9px;
+        font-size: .87rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        border: 1px solid transparent;
+    }
+
+    .details-btn-gold {
+        background: #e9b44c;
+        border-color: #e9b44c;
+        color: #172033 !important;
+    }
+
+    .details-btn-outline {
+        background: #fff;
+        border-color: #d5dae2;
+        color: #172033 !important;
+    }
+
+    .details-btn-outline:hover {
+        background: #172033;
+        border-color: #172033;
+        color: #fff !important;
+    }
+
+    .details-card {
+        background: #fff;
+        border: 1px solid #e4e7ec;
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(23,32,51,.07);
+        overflow: hidden;
+    }
+
+    .details-section {
+        padding: 32px 35px;
+    }
+
+    .details-section + .details-section {
+        border-top: 1px solid #edf0f4;
+    }
+
+    .details-section h2 {
+        margin: 0 0 25px;
+        color: #172033;
+        font-size: 1.1rem;
+        font-weight: 720;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 25px;
+    }
+
+    .details-item span {
+        display: block;
+        margin-bottom: 6px;
+        color: #7b8491;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .details-item strong {
+        color: #172033;
+        font-size: .98rem;
+    }
+
+    .details-total {
+        margin-top: 28px;
+        padding: 23px 25px;
+        background: #172033;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .details-total span {
+        color: #cbd2dc;
+        font-size: .86rem;
+    }
+
+    .details-total strong {
+        color: #e9b44c;
+        font-size: 1.5rem;
+    }
+
+    .details-status {
+        display: inline-flex;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: #fff3d8;
+        color: #8b6417 !important;
+        font-size: .78rem !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+    }
+
+    @@media (max-width: 700px) {
+
+        .details-page {
+            padding: 30px 15px 50px;
+        }
+
+        .details-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .details-actions {
+            width: 100%;
+        }
+
+        .details-actions .details-btn {
+            flex: 1;
+        }
+
+        .details-section {
+            padding: 25px 20px;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .details-total {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+
+<div class="details-page">
+
+    <div class="details-container">
+
+        <div class="details-header">
+
+            <div>
+
+                <span class="details-eyebrow">
+                    BOOKING DETAILS
+                </span>
+
+                <h1>
+                    Booking #@Model.BookingID
+                </h1>
+
+                <p>
+                    Complete reservation information.
+                </p>
+
+            </div>
+
+
+            <div class="details-actions">
+
+                <a asp-action="Edit"
+                   asp-route-bookingid="@Model.BookingID"
+                   class="details-btn details-btn-gold">
+                    Edit Booking
+                </a>
+
+                <a asp-action="Index"
+                   class="details-btn details-btn-outline">
+                    Back
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="details-card">
+
+            <div class="details-section">
+
+                <h2>
+                    Reservation Information
+                </h2>
+
+
+                <div class="details-grid">
+
+                    <div class="details-item">
+
+                        <span>
+                            Booking ID
+                        </span>
+
+                        <strong>
+                            #@Model.BookingID
+                        </strong>
+
+                    </div>
+
+
+                    <div class="details-item">
+
+                        <span>
+                            Property
+                        </span>
+
+                        <strong>
+                            @(Model.Property?.PropertyName
+                                ?? "Property unavailable")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="details-item">
+
+                        <span>
+                            Guest
+                        </span>
+
+                        <strong>
+                            @(Model.User?.UserName
+                                ?? "Guest")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="details-item">
+
+                        <span>
+                            Number of Guests
+                        </span>
+
+                        <strong>
+                            @Model.NumberOfGuests
+                        </strong>
+
+                    </div>
+
+
+                    <div class="details-item">
+
+                        <span>
+                            Check-in
+                        </span>
+
+                        <strong>
+                            @Model.CheckInDate.ToString(
+                                "dd MMMM yyyy"
+                            )
+                        </strong>
+
+                    </div>
+
+
+                    <div class="details-item">
+
+                        <span>
+                            Check-out
+                        </span>
+
+                        <strong>
+                            @Model.CheckOutDate.ToString(
+                                "dd MMMM yyyy"
+                            )
+                        </strong>
+
+                    </div>
+
+
+                    <div class="details-item">
+
+                        <span>
+                            Booking Status
+                        </span>
+
+                        <strong class="details-status">
+                            @Model.Status
+                        </strong>
+
+                    </div>
+
+
+                    <div class="details-item">
+
+                        <span>
+                            Booking Created
+                        </span>
+
+                        <strong>
+                            @Model.CreatedAt.ToString(
+                                "dd MMMM yyyy HH:mm"
+                            )
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-total">
+
+                    <span>
+                        Total Booking Amount
+                    </span>
+
+                    <strong>
+                        R @Model.TotalAmount.ToString("N2")
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>

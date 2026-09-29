@@ -1,89 +1,484 @@
 @model HomeAwayFromHome.Models.Booking
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Booking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<style>
+    .booking-page {
+        min-height: calc(100vh - 80px);
+        background: #f5f6f8;
+        padding: 50px 25px 70px;
+    }
 
-<h4>Booking</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="BookingID" />
-            <div class="form-group">
-                <label asp-for="UserID" class="control-label"></label>
-                <input asp-for="UserID" class="form-control" />
-                <span asp-validation-for="UserID" class="text-danger"></span>
+    .booking-container {
+        max-width: 1050px;
+        margin: 0 auto;
+    }
+
+    .booking-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .booking-eyebrow {
+        display: inline-block;
+        color: #b98728;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .booking-heading h1 {
+        margin: 0;
+        color: #172033;
+        font-size: 2.15rem;
+        font-weight: 750;
+    }
+
+    .booking-heading p {
+        margin: 8px 0 0;
+        color: #697386;
+    }
+
+    .booking-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 17px;
+        border: 1px solid #d5dae2;
+        border-radius: 9px;
+        background: #fff;
+        color: #172033 !important;
+        text-decoration: none !important;
+        font-size: .88rem;
+        font-weight: 650;
+    }
+
+    .booking-back:hover {
+        background: #172033;
+        border-color: #172033;
+        color: #fff !important;
+    }
+
+    .booking-card {
+        background: #fff;
+        border: 1px solid #e4e7ec;
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(23,32,51,.07);
+        overflow: hidden;
+    }
+
+    .booking-card-top {
+        padding: 30px 35px 25px;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .booking-card-title {
+        margin: 0;
+        color: #172033;
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
+
+    .booking-card-subtitle {
+        margin: 5px 0 0;
+        color: #7a8391;
+        font-size: .88rem;
+    }
+
+    .booking-form {
+        padding: 35px;
+    }
+
+    .booking-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 25px 28px;
+    }
+
+    .booking-field.full {
+        grid-column: 1 / -1;
+    }
+
+    .booking-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #253047;
+        font-size: .88rem;
+        font-weight: 700;
+    }
+
+    .booking-field .form-control {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 14px;
+        border: 1px solid #d7dce4;
+        border-radius: 9px;
+        background: #fff;
+        color: #172033;
+        font-size: .94rem;
+    }
+
+    .booking-field .form-control:focus {
+        border-color: #e2ae45;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(226,174,69,.14);
+    }
+
+    .booking-readonly {
+        background: #f3f4f6 !important;
+        color: #626b79 !important;
+    }
+
+    .booking-info {
+        background: #f8f9fb;
+        border: 1px solid #e8ebef;
+        border-radius: 10px;
+        padding: 13px 16px;
+        margin-top: 8px;
+        color: #697386;
+        font-size: .8rem;
+    }
+
+    .booking-validation {
+        background: #fff5f4;
+        border: 1px solid #f2c7c3;
+        border-radius: 9px;
+        padding: 13px 16px;
+        margin-bottom: 25px;
+        color: #9f2d25;
+    }
+
+    .field-validation-error {
+        display: block;
+        margin-top: 6px;
+        color: #b42318;
+        font-size: .78rem;
+    }
+
+    .booking-form-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #edf0f4;
+    }
+
+    .booking-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 10px 21px;
+        border-radius: 9px;
+        font-size: .88rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+
+    .booking-btn-cancel {
+        background: #f0f2f5;
+        border-color: #e0e3e8;
+        color: #303949 !important;
+    }
+
+    .booking-btn-submit {
+        background: #e9b44c;
+        border-color: #e9b44c;
+        color: #172033 !important;
+    }
+
+    .booking-btn-submit:hover {
+        background: #dca63e;
+        border-color: #dca63e;
+    }
+
+    @@media (max-width: 768px) {
+
+        .booking-page {
+            padding: 30px 15px 50px;
+        }
+
+        .booking-heading {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .booking-back {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .booking-form,
+        .booking-card-top {
+            padding: 25px 20px;
+        }
+
+        .booking-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-field.full {
+            grid-column: auto;
+        }
+
+        .booking-form-footer {
+            flex-direction: column-reverse;
+        }
+
+        .booking-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="booking-page">
+
+    <div class="booking-container">
+
+        <div class="booking-heading">
+
+            <div>
+
+                <span class="booking-eyebrow">
+                    RESERVATION MANAGEMENT
+                </span>
+
+                <h1>
+                    Edit Booking
+                </h1>
+
+                <p>
+                    Update the reservation information.
+                </p>
+
             </div>
-            <div class="form-group">
-                <label asp-for="User" class="control-label"></label>
-                <input asp-for="User" class="form-control" />
-                <span asp-validation-for="User" class="text-danger"></span>
+
+            <a asp-action="Index"
+               class="booking-back">
+                ← Back to Bookings
+            </a>
+
+        </div>
+
+
+        <div class="booking-card">
+
+            <div class="booking-card-top">
+
+                <h2 class="booking-card-title">
+                    Booking #@Model.BookingID
+                </h2>
+
+                <p class="booking-card-subtitle">
+                    Update the details below.
+                </p>
+
             </div>
-            <div class="form-group">
-                <label asp-for="PropertyID" class="control-label"></label>
-                <input asp-for="PropertyID" class="form-control" />
-                <span asp-validation-for="PropertyID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Property" class="control-label"></label>
-                <input asp-for="Property" class="form-control" />
-                <span asp-validation-for="Property" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CheckInDate" class="control-label"></label>
-                <input asp-for="CheckInDate" class="form-control" />
-                <span asp-validation-for="CheckInDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CheckOutDate" class="control-label"></label>
-                <input asp-for="CheckOutDate" class="form-control" />
-                <span asp-validation-for="CheckOutDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NumberOfGuests" class="control-label"></label>
-                <input asp-for="NumberOfGuests" class="form-control" />
-                <span asp-validation-for="NumberOfGuests" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalAmount" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reviews" class="control-label"></label>
-                <input asp-for="Reviews" class="form-control" />
-                <span asp-validation-for="Reviews" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FinancialTransactions" class="control-label"></label>
-                <input asp-for="FinancialTransactions" class="form-control" />
-                <span asp-validation-for="FinancialTransactions" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+
+
+            <form asp-action="Edit"
+                  method="post"
+                  class="booking-form">
+
+                <input type="hidden"
+                       asp-for="BookingID" />
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="booking-validation">
+                </div>
+
+
+                <div class="booking-grid">
+
+
+                    <div class="booking-field full">
+
+                        <label asp-for="PropertyID">
+                            Property
+                        </label>
+
+                        <select asp-for="PropertyID"
+                                class="form-control"
+                                asp-items="ViewBag.PropertyID">
+
+                            <option value="">
+                                Select a property
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="PropertyID"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <div class="booking-field">
+
+                        <label asp-for="CheckInDate">
+                            Check-in Date
+                        </label>
+
+                        <input asp-for="CheckInDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="CheckInDate"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <div class="booking-field">
+
+                        <label asp-for="CheckOutDate">
+                            Check-out Date
+                        </label>
+
+                        <input asp-for="CheckOutDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="CheckOutDate"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <div class="booking-field">
+
+                        <label asp-for="NumberOfGuests">
+                            Number of Guests
+                        </label>
+
+                        <input asp-for="NumberOfGuests"
+                               type="number"
+                               min="1"
+                               class="form-control" />
+
+                        <span asp-validation-for="NumberOfGuests"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <div class="booking-field">
+
+                        <label>
+                            Total Amount
+                        </label>
+
+                        <input value="R @Model.TotalAmount.ToString("N2")"
+                               class="form-control booking-readonly"
+                               readonly />
+
+                        <div class="booking-info">
+                            Recalculated automatically when the
+                            booking is saved.
+                        </div>
+
+                    </div>
+
+
+                    <div class="booking-field">
+
+                        <label asp-for="Status">
+                            Booking Status
+                        </label>
+
+                        <select asp-for="Status"
+                                class="form-control">
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Confirmed">
+                                Confirmed
+                            </option>
+
+                            <option value="Cancelled">
+                                Cancelled
+                            </option>
+
+                            <option value="Completed">
+                                Completed
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="Status"
+                              class="field-validation-error">
+                        </span>
+
+                    </div>
+
+
+                    <div class="booking-field">
+
+                        <label>
+                            Booking Created
+                        </label>
+
+                        <input value="@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")"
+                               class="form-control booking-readonly"
+                               readonly />
+
+                        <div class="booking-info">
+                            Creation date cannot be changed.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="booking-form-footer">
+
+                    <a asp-action="Index"
+                       class="booking-btn booking-btn-cancel">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="booking-btn booking-btn-submit">
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial"
+        );
+    }
+
 }
