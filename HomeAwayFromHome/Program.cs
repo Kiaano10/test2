@@ -34,6 +34,8 @@ builder.Services.AddScoped<IAmenityService, AmenityService>();
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IFinancialReportService, FinancialReportService>();
+
 
 var app = builder.Build();
 
