@@ -2,6 +2,7 @@ using HomeAwayFromHome.Data;
 using HomeAwayFromHome.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using HomeAwayFromHome.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddScoped<IPropertyService, PropertyService>();
 
 var app = builder.Build();
 
