@@ -32,7 +32,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IPropertyService, PropertyService>();
 builder.Services.AddScoped<IAmenityService, AmenityService>();
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
-
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 var app = builder.Build();
 
