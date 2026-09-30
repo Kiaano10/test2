@@ -1,8 +1,5 @@
-using HomeAwayFromHome.Data;
-using HomeAwayFromHome.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using HomeAwayFromHome.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 public partial class Program
 {
@@ -10,59 +7,52 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Database connection
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-
-        // Identity
-        builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
-        {
-            options.SignIn.RequireConfirmedAccount = false;
-
-            options.Password.RequiredLength = 8;
-            options.Password.RequireDigit = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireLowercase = true;
-            options.Password.RequireNonAlphanumeric = false;
-        })
-        .AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
-
         builder.Services.AddControllersWithViews();
-        builder.Services.AddRazorPages();
 
-        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/Login";
+                options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                options.SlidingExpiration = true;
+            });
 
-        // Register services
-        builder.Services.AddScoped<IPropertyService, PropertyService>();
-        builder.Services.AddScoped<IAmenityService, AmenityService>();
-        builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
-        builder.Services.AddScoped<IBookingService, BookingService>();
-        builder.Services.AddScoped<IReviewService, ReviewService>();
-        builder.Services.AddScoped<IFinancialReportService, FinancialReportService>();
-        builder.Services.AddScoped<PropertyApiService>();
+        builder.Services.AddAuthorization();
+
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddTransient<JwtAuthorizationHandler>();
+
         builder.Services.AddHttpClient("HomeAwayFromHomeAPI", client =>
-            {
-                client.BaseAddress =
-                    new Uri("https://localhost:7243/");
-            }).AddHttpMessageHandler<JwtAuthorizationHandler>();
+        {
+            client.BaseAddress = new Uri("https://localhost:7243/");
+            client.Timeout = TimeSpan.FromSeconds(60);
+        }).AddHttpMessageHandler<JwtAuthorizationHandler>();
 
         builder.Services.AddDistributedMemoryCache();
-
         builder.Services.AddSession(options =>
         {
-            options.IdleTimeout = TimeSpan.FromMinutes(30);
+            options.IdleTimeout = TimeSpan.FromHours(1);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
+
+        builder.Services.AddScoped<PropertyApiService>();
+        builder.Services.AddScoped<AuthApiService>();
+        builder.Services.AddScoped<AmenityApiService>();
+        builder.Services.AddScoped<AvailabilityApiService>();
+        builder.Services.AddScoped<BookingApiService>();
+        builder.Services.AddScoped<ReviewApiService>();
+        builder.Services.AddScoped<FinancialTransactionApiService>();
+        builder.Services.AddScoped<FinancialReportApiService>();
+        builder.Services.AddScoped<CustomerApiService>();
 
         var app = builder.Build();
 
-        // HTTP pipeline
         if (app.Environment.IsDevelopment())
         {
-            app.UseMigrationsEndPoint();
+            app.UseDeveloperExceptionPage();
         }
         else
         {
@@ -72,7 +62,7 @@ public partial class Program
 
         app.UseHttpsRedirection();
         app.UseRouting();
-
+        app.UseSession();
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -82,9 +72,6 @@ public partial class Program
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}")
             .WithStaticAssets();
-
-        app.MapRazorPages()
-           .WithStaticAssets();
 
         app.Run();
     }
