@@ -40,9 +40,21 @@ public partial class Program
         builder.Services.AddScoped<IReviewService, ReviewService>();
         builder.Services.AddScoped<IFinancialReportService, FinancialReportService>();
         builder.Services.AddScoped<PropertyApiService>();
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddTransient<JwtAuthorizationHandler>();
         builder.Services.AddHttpClient("HomeAwayFromHomeAPI", client =>
+            {
+                client.BaseAddress =
+                    new Uri("https://localhost:7243/");
+            }).AddHttpMessageHandler<JwtAuthorizationHandler>();
+
+        builder.Services.AddDistributedMemoryCache();
+
+        builder.Services.AddSession(options =>
         {
-            client.BaseAddress = new Uri("https://localhost:7243/");
+            options.IdleTimeout = TimeSpan.FromMinutes(30);
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
         });
 
         var app = builder.Build();

@@ -1,5 +1,4 @@
-﻿
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using HomeAwayFromHome.API.DTOs;
 using HomeAwayFromHome.Models;
 using HomeAwayFromHome.Services;

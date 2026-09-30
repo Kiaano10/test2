@@ -1,5 +1,4 @@
-﻿
-using HomeAwayFromHome.API.DTOs;
+﻿using HomeAwayFromHome.API.DTOs;
 using HomeAwayFromHome.Models;
 using HomeAwayFromHome.Services;
 using Microsoft.AspNetCore.Authorization;

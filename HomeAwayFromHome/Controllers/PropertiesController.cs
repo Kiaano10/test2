@@ -1,150 +1,166 @@
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using HomeAwayFromHome.Models;
-using HomeAwayFromHome.Data;
+using HomeAwayFromHome.Services;
+using Microsoft.AspNetCore.Mvc;
 
 public class PropertiesController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly PropertyApiService _propertyApi;
 
-    public PropertiesController(ApplicationDbContext context)
+    public PropertiesController(PropertyApiService propertyApi)
     {
-        _context = context;
+        _propertyApi = propertyApi;
     }
 
-    // GET: PROPERTYS
-    public async Task<IActionResult> Index()    
+    // GET: Properties
+    public async Task<IActionResult> Index()
     {
-        return View(await _context.Property.ToListAsync());
-    }
-
-    // GET: PROPERTYS/Details/5
-    public async Task<IActionResult> Details(int? propertyid)
-    {
-        if (propertyid == null)
+        try
         {
-            return NotFound();
+            var properties = await _propertyApi.GetAllAsync();
+            return View(properties);
         }
-
-        var property = await _context.Property
-            .FirstOrDefaultAsync(m => m.PropertyID == propertyid);
-        if (property == null)
+        catch (HttpRequestException)
         {
-            return NotFound();
+            TempData["Error"] =
+                "Unable to retrieve properties from the API.";
+            return View(new List<Property>());
         }
-
-        return View(property);
     }
 
-    // GET: PROPERTYS/Create
+    // GET: Properties/Details/5
+    public async Task<IActionResult> Details(int id)
+    {
+        try
+        {
+            var property = await _propertyApi.GetByIdAsync(id);
+
+            if (property == null)
+                return NotFound();
+
+            return View(property);
+        }
+        catch (HttpRequestException)
+        {
+            return Problem(
+                "Unable to retrieve the property from the API.");
+        }
+    }
+
+    // GET: Properties/Create
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: PROPERTYS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: Properties/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("PropertyID,PropertyName,Description,Address,MaximumGuests,Bedrooms,Bathrooms,PricePerNight,Bookings,Availabilities,PropertyAmenities,FinancialTransactions")] Property property)
+    public async Task<IActionResult> Create(
+        [Bind("PropertyName,Description,Address,MaximumGuests," +
+              "Bedrooms,Bathrooms,PricePerNight")]
+        Property property)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
+            return View(property);
+
+        try
         {
-            _context.Add(property);
-            await _context.SaveChangesAsync();
+            await _propertyApi.CreateAsync(property);
             return RedirectToAction(nameof(Index));
         }
-        return View(property);
+        catch (HttpRequestException)
+        {
+            ModelState.AddModelError("",
+                "Unable to create the property. " +
+                "Check the API and your permissions.");
+            return View(property);
+        }
     }
 
-    // GET: PROPERTYS/Edit/5
-    public async Task<IActionResult> Edit(int? propertyid)
+    // GET: Properties/Edit/5
+    public async Task<IActionResult> Edit(int id)
     {
-        if (propertyid == null)
+        try
         {
-            return NotFound();
-        }
+            var property = await _propertyApi.GetByIdAsync(id);
 
-        var property = await _context.Property.FindAsync(propertyid);
-        if (property == null)
-        {
-            return NotFound();
+            if (property == null)
+                return NotFound();
+
+            return View(property);
         }
-        return View(property);
+        catch (HttpRequestException)
+        {
+            return Problem(
+                "Unable to retrieve the property from the API.");
+        }
     }
 
-    // POST: PROPERTYS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: Properties/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? propertyid, [Bind("PropertyID,PropertyName,Description,Address,MaximumGuests,Bedrooms,Bathrooms,PricePerNight,Bookings,Availabilities,PropertyAmenities,FinancialTransactions")] Property property)
+    public async Task<IActionResult> Edit(
+        int id,
+        [Bind("PropertyID,PropertyName,Description,Address," +
+              "MaximumGuests,Bedrooms,Bathrooms,PricePerNight")]
+        Property property)
     {
-        if (propertyid != property.PropertyID)
-        {
+        if (id != property.PropertyID)
             return NotFound();
-        }
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
+            return View(property);
+
+        try
         {
-            try
-            {
-                _context.Update(property);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PropertyExists(property.PropertyID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _propertyApi.UpdateAsync(id, property);
             return RedirectToAction(nameof(Index));
         }
-        return View(property);
+        catch (HttpRequestException)
+        {
+            ModelState.AddModelError("",
+                "Unable to update the property. " +
+                "Check the API and your permissions.");
+            return View(property);
+        }
     }
 
-    // GET: PROPERTYS/Delete/5
-    public async Task<IActionResult> Delete(int? propertyid)
+    // GET: Properties/Delete/5
+    public async Task<IActionResult> Delete(int id)
     {
-        if (propertyid == null)
+        try
         {
-            return NotFound();
-        }
+            var property = await _propertyApi.GetByIdAsync(id);
 
-        var property = await _context.Property
-            .FirstOrDefaultAsync(m => m.PropertyID == propertyid);
-        if (property == null)
+            if (property == null)
+                return NotFound();
+
+            return View(property);
+        }
+        catch (HttpRequestException)
         {
-            return NotFound();
+            return Problem(
+                "Unable to retrieve the property from the API.");
         }
-
-        return View(property);
     }
 
-    // POST: PROPERTYS/Delete/5
+    // POST: Properties/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? propertyid)
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var property = await _context.Property.FindAsync(propertyid);
-        if (property != null)
+        try
         {
-            _context.Property.Remove(property);
+            await _propertyApi.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
         }
+        catch (HttpRequestException)
+        {
+            TempData["Error"] =
+                "Unable to delete the property. " +
+                "It may have existing bookings or you may lack permission.";
 
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool PropertyExists(int? propertyid)
-    {
-        return _context.Property.Any(e => e.PropertyID == propertyid);
+            return RedirectToAction(nameof(Delete), new { id });
+        }
     }
 }
