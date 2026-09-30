@@ -2,377 +2,370 @@
 
 @{
     ViewData["Title"] = "Booking Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
-    .details-page {
-        min-height: calc(100vh - 80px);
-        background: #f5f6f8;
-        padding: 50px 25px 70px;
+    .booking-details-page {
+        min-height: calc(100vh - 160px);
+        background: #f7f8fb;
+        padding: 45px 0 70px;
     }
 
-    .details-container {
-        max-width: 950px;
+    .booking-details-container {
+        max-width: 900px;
         margin: 0 auto;
+        padding: 0 20px;
     }
 
-    .details-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        gap: 25px;
-        margin-bottom: 30px;
-    }
-
-    .details-eyebrow {
-        color: #b98728;
-        font-size: .72rem;
-        font-weight: 800;
-        letter-spacing: 2px;
-    }
-
-    .details-header h1 {
-        margin: 8px 0;
-        color: #172033;
-        font-size: 2.15rem;
-        font-weight: 750;
-    }
-
-    .details-header p {
-        margin: 0;
-        color: #697386;
-    }
-
-    .details-actions {
-        display: flex;
-        gap: 10px;
-    }
-
-    .details-btn {
+    .back-link {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        min-height: 45px;
-        padding: 10px 19px;
-        border-radius: 9px;
-        font-size: .87rem;
-        font-weight: 700;
-        text-decoration: none !important;
-        border: 1px solid transparent;
+        gap: 7px;
+        color: #536174;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
     }
 
-    .details-btn-gold {
-        background: #e9b44c;
-        border-color: #e9b44c;
-        color: #172033 !important;
-    }
-
-    .details-btn-outline {
-        background: #fff;
-        border-color: #d5dae2;
-        color: #172033 !important;
-    }
-
-    .details-btn-outline:hover {
-        background: #172033;
-        border-color: #172033;
-        color: #fff !important;
+    .back-link:hover {
+        color: #0b1f3a;
+        text-decoration: none;
     }
 
     .details-card {
-        background: #fff;
-        border: 1px solid #e4e7ec;
-        border-radius: 18px;
-        box-shadow: 0 12px 35px rgba(23,32,51,.07);
+        background: #ffffff;
+        border: 1px solid #e2e6eb;
+        border-radius: 15px;
+        box-shadow: 0 7px 25px rgba(11, 31, 58, 0.08);
         overflow: hidden;
     }
 
-    .details-section {
-        padding: 32px 35px;
+    .details-header {
+        background: #0b1f3a;
+        color: #ffffff;
+        padding: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
     }
 
-    .details-section + .details-section {
-        border-top: 1px solid #edf0f4;
+    .details-header-left h1 {
+        margin: 0 0 7px;
+        font-size: 1.8rem;
+        font-weight: 700;
     }
 
-    .details-section h2 {
-        margin: 0 0 25px;
-        color: #172033;
+    .booking-number {
+        color: #d5dbe3;
+        font-size: 0.9rem;
+    }
+
+    .status-badge {
+        background: #ffffff;
+        color: #0b1f3a;
+        border-radius: 25px;
+        padding: 8px 15px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .details-body {
+        padding: 30px;
+    }
+
+    .section-title {
+        color: #0b1f3a;
         font-size: 1.1rem;
-        font-weight: 720;
+        font-weight: 700;
+        margin: 0 0 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e7eaf0;
     }
 
     .details-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0,1fr));
-        gap: 25px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px 30px;
+        margin-bottom: 32px;
     }
 
-    .details-item span {
+    .detail-item {
+        padding-bottom: 4px;
+    }
+
+    .detail-label {
         display: block;
-        margin-bottom: 6px;
-        color: #7b8491;
-        font-size: .68rem;
-        font-weight: 800;
-        letter-spacing: 1px;
+        color: #8a929d;
         text-transform: uppercase;
+        letter-spacing: 0.55px;
+        font-size: 0.75rem;
+        margin-bottom: 6px;
     }
 
-    .details-item strong {
-        color: #172033;
-        font-size: .98rem;
+    .detail-value {
+        color: #25364d;
+        font-size: 1rem;
+        font-weight: 600;
     }
 
-    .details-total {
-        margin-top: 28px;
-        padding: 23px 25px;
-        background: #172033;
-        border-radius: 12px;
+    .amount-section {
+        background: #f8f9fb;
+        border: 1px solid #e5e8ed;
+        border-radius: 10px;
+        padding: 20px;
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        gap: 20px;
+        align-items: center;
+        margin-bottom: 28px;
     }
 
-    .details-total span {
-        color: #cbd2dc;
-        font-size: .86rem;
+    .amount-label {
+        color: #596575;
+        font-size: 0.95rem;
+        font-weight: 600;
     }
 
-    .details-total strong {
-        color: #e9b44c;
-        font-size: 1.5rem;
+    .amount-value {
+        color: #0b1f3a;
+        font-size: 1.45rem;
+        font-weight: 700;
     }
 
-    .details-status {
-        display: inline-flex;
-        padding: 6px 12px;
-        border-radius: 20px;
-        background: #fff3d8;
-        color: #8b6417 !important;
-        font-size: .78rem !important;
-        text-transform: none !important;
-        letter-spacing: 0 !important;
+    .details-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        border-top: 1px solid #e7eaf0;
+        padding-top: 25px;
     }
 
-    @@media (max-width: 700px) {
+    .back-button {
+        display: inline-block;
+        padding: 11px 19px;
+        border: 1px solid #cfd5dd;
+        border-radius: 7px;
+        color: #39485b;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        background: #ffffff;
+        transition: 0.2s ease;
+    }
 
-        .details-page {
-            padding: 30px 15px 50px;
-        }
+    .back-button:hover {
+        background: #f4f6f8;
+        color: #0b1f3a;
+        text-decoration: none;
+    }
 
+    .cancel-button {
+        padding: 11px 19px;
+        border: 1px solid #d8aaaa;
+        border-radius: 7px;
+        color: #963535;
+        background: #ffffff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .cancel-button:hover {
+        background: #fdf0f0;
+        color: #7f2929;
+    }
+
+    .info-note {
+        margin-top: 25px;
+        padding: 14px 16px;
+        border-radius: 8px;
+        background: #f5f7fa;
+        border-left: 4px solid #c9a227;
+        color: #5d6876;
+        font-size: 0.87rem;
+        line-height: 1.5;
+    }
+
+    @@media (max-width: 650px) {
         .details-header {
             flex-direction: column;
             align-items: flex-start;
         }
 
-        .details-actions {
-            width: 100%;
-        }
-
-        .details-actions .details-btn {
-            flex: 1;
-        }
-
-        .details-section {
-            padding: 25px 20px;
-        }
-
         .details-grid {
             grid-template-columns: 1fr;
+            gap: 18px;
         }
 
-        .details-total {
+        .amount-section {
             flex-direction: column;
             align-items: flex-start;
+            gap: 7px;
+        }
+
+        .details-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .back-button,
+        .cancel-button {
+            width: 100%;
+            text-align: center;
         }
     }
 </style>
 
+<div class="booking-details-page">
+    <div class="booking-details-container">
 
-<div class="details-page">
-
-    <div class="details-container">
-
-        <div class="details-header">
-
-            <div>
-
-                <span class="details-eyebrow">
-                    BOOKING DETAILS
-                </span>
-
-                <h1>
-                    Booking #@Model.BookingID
-                </h1>
-
-                <p>
-                    Complete reservation information.
-                </p>
-
-            </div>
-
-
-            <div class="details-actions">
-
-                <a asp-action="Edit"
-                   asp-route-bookingid="@Model.BookingID"
-                   class="details-btn details-btn-gold">
-                    Edit Booking
-                </a>
-
-                <a asp-action="Index"
-                   class="details-btn details-btn-outline">
-                    Back
-                </a>
-
-            </div>
-
-        </div>
-
+        <a asp-controller="Bookings"
+           asp-action="Index"
+           class="back-link">
+            ← Back to My Bookings
+        </a>
 
         <div class="details-card">
 
-            <div class="details-section">
+            <div class="details-header">
 
-                <h2>
-                    Reservation Information
-                </h2>
+                <div class="details-header-left">
 
+                    <h1>
+                        @(Model.Property?.PropertyName ?? "Booking Details")
+                    </h1>
 
-                <div class="details-grid">
-
-                    <div class="details-item">
-
-                        <span>
-                            Booking ID
-                        </span>
-
-                        <strong>
-                            #@Model.BookingID
-                        </strong>
-
-                    </div>
-
-
-                    <div class="details-item">
-
-                        <span>
-                            Property
-                        </span>
-
-                        <strong>
-                            @(Model.Property?.PropertyName
-                                ?? "Property unavailable")
-                        </strong>
-
-                    </div>
-
-
-                    <div class="details-item">
-
-                        <span>
-                            Guest
-                        </span>
-
-                        <strong>
-                            @(Model.User?.UserName
-                                ?? "Guest")
-                        </strong>
-
-                    </div>
-
-
-                    <div class="details-item">
-
-                        <span>
-                            Number of Guests
-                        </span>
-
-                        <strong>
-                            @Model.NumberOfGuests
-                        </strong>
-
-                    </div>
-
-
-                    <div class="details-item">
-
-                        <span>
-                            Check-in
-                        </span>
-
-                        <strong>
-                            @Model.CheckInDate.ToString(
-                                "dd MMMM yyyy"
-                            )
-                        </strong>
-
-                    </div>
-
-
-                    <div class="details-item">
-
-                        <span>
-                            Check-out
-                        </span>
-
-                        <strong>
-                            @Model.CheckOutDate.ToString(
-                                "dd MMMM yyyy"
-                            )
-                        </strong>
-
-                    </div>
-
-
-                    <div class="details-item">
-
-                        <span>
-                            Booking Status
-                        </span>
-
-                        <strong class="details-status">
-                            @Model.Status
-                        </strong>
-
-                    </div>
-
-
-                    <div class="details-item">
-
-                        <span>
-                            Booking Created
-                        </span>
-
-                        <strong>
-                            @Model.CreatedAt.ToString(
-                                "dd MMMM yyyy HH:mm"
-                            )
-                        </strong>
-
+                    <div class="booking-number">
+                        Booking #@Model.BookingID
                     </div>
 
                 </div>
 
-
-                <div class="details-total">
-
-                    <span>
-                        Total Booking Amount
-                    </span>
-
-                    <strong>
-                        R @Model.TotalAmount.ToString("N2")
-                    </strong>
-
+                <div class="status-badge">
+                    @(string.IsNullOrWhiteSpace(Model.Status)
+                        ? "Pending"
+                        : Model.Status)
                 </div>
 
             </div>
 
+            <div class="details-body">
+
+                <h2 class="section-title">
+                    Reservation Information
+                </h2>
+
+                <div class="details-grid">
+
+                    <div class="detail-item">
+                        <span class="detail-label">Property</span>
+
+                        <span class="detail-value">
+                            @(Model.Property?.PropertyName ?? "Not available")
+                        </span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Number of Guests</span>
+
+                        <span class="detail-value">
+                            @Model.NumberOfGuests
+                        </span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Check-in</span>
+
+                        <span class="detail-value">
+                            @Model.CheckInDate.ToString("dddd, dd MMMM yyyy")
+                        </span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Check-out</span>
+
+                        <span class="detail-value">
+                            @Model.CheckOutDate.ToString("dddd, dd MMMM yyyy")
+                        </span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Booking Created</span>
+
+                        <span class="detail-value">
+                            @Model.CreatedAt.ToString("dd MMMM yyyy, HH:mm")
+                        </span>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Booking Status</span>
+
+                        <span class="detail-value">
+                            @(string.IsNullOrWhiteSpace(Model.Status)
+                                ? "Pending"
+                                : Model.Status)
+                        </span>
+                    </div>
+
+                </div>
+
+                <h2 class="section-title">
+                    Payment Summary
+                </h2>
+
+                <div class="amount-section">
+
+                    <span class="amount-label">
+                        Total Booking Amount
+                    </span>
+
+                    <span class="amount-value">
+                        R @Model.TotalAmount.ToString("N2")
+                    </span>
+
+                </div>
+
+                <div class="details-actions">
+
+                    <a asp-controller="Bookings"
+                       asp-action="Index"
+                       class="back-button">
+                        ← Back to Bookings
+                    </a>
+
+                    @if (!string.Equals(Model.Status, "Cancelled", StringComparison.OrdinalIgnoreCase)
+                        && !string.Equals(Model.Status, "Completed", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <form asp-controller="Bookings"
+                              asp-action="Cancel"
+                              asp-route-id="@Model.BookingID"
+                              method="post"
+                              onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="cancel-button">
+                                Cancel Booking
+                            </button>
+
+                        </form>
+                    }
+
+                </div>
+
+                <div class="info-note">
+                    If you need to make changes to your reservation,
+                    please contact the Home Away From Home team.
+                    Booking cancellation is available while the reservation
+                    is still active.
+                </div>
+
+            </div>
         </div>
-
     </div>
-
 </div>
