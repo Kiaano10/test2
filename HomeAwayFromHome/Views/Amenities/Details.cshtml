@@ -1,38 +1,314 @@
 @model HomeAwayFromHome.Models.Amenity
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Amenity Details";
 }
 
-<h1>Details</h1>
+<style>
+    .amenity-details-page {
+        min-height: calc(100vh - 160px);
+        background: #f7f8fb;
+        padding: 50px 0 70px;
+    }
 
-<div>
-    <h4>Amenity</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PropertyAmenities)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PropertyAmenities)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AmenityID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    .amenity-details-container {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #536174;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 22px;
+    }
+
+    .back-link:hover {
+        color: #0b1f3a;
+        text-decoration: none;
+    }
+
+    .page-eyebrow {
+        display: block;
+        color: #c9a227;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+    }
+
+    .page-heading {
+        margin-bottom: 25px;
+    }
+
+    .page-heading h1 {
+        color: #0b1f3a;
+        font-size: 2.15rem;
+        font-weight: 700;
+        margin: 0 0 8px;
+    }
+
+    .page-heading p {
+        color: #6c7480;
+        margin: 0;
+        font-size: 0.98rem;
+    }
+
+    .details-card {
+        background: #ffffff;
+        border: 1px solid #e2e6eb;
+        border-radius: 15px;
+        box-shadow: 0 7px 25px rgba(11, 31, 58, 0.08);
+        overflow: hidden;
+    }
+
+    .details-card-header {
+        background: #0b1f3a;
+        color: #ffffff;
+        padding: 28px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .details-card-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .amenity-number {
+        color: #d7dce3;
+        font-size: 0.82rem;
+        margin-top: 5px;
+    }
+
+    .amenity-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #c9a227;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .details-body {
+        padding: 32px;
+    }
+
+    .detail-section {
+        margin-bottom: 28px;
+    }
+
+    .detail-label {
+        display: block;
+        color: #8a929d;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .detail-name {
+        color: #0b1f3a;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .detail-description {
+        color: #596575;
+        font-size: 0.97rem;
+        line-height: 1.7;
+        margin: 0;
+        white-space: pre-line;
+    }
+
+    .no-description {
+        color: #8a929d;
+        font-style: italic;
+    }
+
+    .details-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        border-top: 1px solid #e7eaf0;
+        padding-top: 25px;
+    }
+
+    .secondary-button {
+        display: inline-block;
+        padding: 11px 19px;
+        border: 1px solid #cfd5dd;
+        border-radius: 7px;
+        color: #39485b;
+        background: #ffffff;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .secondary-button:hover {
+        background: #f4f6f8;
+        color: #0b1f3a;
+        text-decoration: none;
+    }
+
+    .primary-button {
+        display: inline-block;
+        padding: 11px 21px;
+        border-radius: 7px;
+        background: #c9a227;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 700;
+        transition: 0.2s ease;
+    }
+
+    .primary-button:hover {
+        background: #b18d1f;
+        color: #ffffff;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    @@media (max-width: 650px) {
+        .amenity-details-page {
+            padding: 35px 0 50px;
+        }
+
+        .details-card-header {
+            padding: 24px 20px;
+        }
+
+        .details-body {
+            padding: 24px 20px;
+        }
+
+        .details-actions {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .secondary-button,
+        .primary-button {
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<div class="amenity-details-page">
+
+    <div class="amenity-details-container">
+
+        <a asp-action="Index" class="back-link">
+            ← Back to Amenities
+        </a>
+
+        <div class="page-heading">
+            <span class="page-eyebrow">PROPERTY FEATURES</span>
+
+            <h1>Amenity Details</h1>
+
+            <p>
+                View the information associated with this property amenity.
+            </p>
+        </div>
+
+        <div class="details-card">
+
+            <div class="details-card-header">
+
+                <div>
+                    <h2>@Model.Name</h2>
+
+                    <div class="amenity-number">
+                        Amenity #@Model.AmenityID
+                    </div>
+                </div>
+
+                <div class="amenity-icon">
+                    ✦
+                </div>
+
+            </div>
+
+            <div class="details-body">
+
+                <div class="detail-section">
+
+                    <span class="detail-label">
+                        Amenity Name
+                    </span>
+
+                    <p class="detail-name">
+                        @Model.Name
+                    </p>
+
+                </div>
+
+                <div class="detail-section">
+
+                    <span class="detail-label">
+                        Description
+                    </span>
+
+                    @if (string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <p class="detail-description no-description">
+                            No description has been provided for this amenity.
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="detail-description">
+                            @Model.Description
+                        </p>
+                    }
+
+                </div>
+
+                <div class="details-actions">
+
+                    <a asp-action="Index"
+                       class="secondary-button">
+                        ← Back to Amenities
+                    </a>
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Owner"))
+                    {
+                        <a asp-action="Edit"
+                           asp-route-id="@Model.AmenityID"
+                           class="primary-button">
+                            Edit Amenity
+                        </a>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>

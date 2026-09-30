@@ -1,42 +1,357 @@
 @model HomeAwayFromHome.Models.Amenity
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add Amenity";
 }
 
-<h1>Create</h1>
+<style>
+    .amenity-create-page {
+        min-height: calc(100vh - 160px);
+        background: #f7f8fb;
+        padding: 50px 0 70px;
+    }
 
-<h4>Amenity</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    .amenity-create-container {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
 
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #536174;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 22px;
+    }
+
+    .back-link:hover {
+        color: #0b1f3a;
+        text-decoration: none;
+    }
+
+    .page-heading {
+        margin-bottom: 25px;
+    }
+
+    .page-eyebrow {
+        display: block;
+        color: #c9a227;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+    }
+
+    .page-heading h1 {
+        color: #0b1f3a;
+        font-size: 2.15rem;
+        font-weight: 700;
+        margin: 0 0 8px;
+    }
+
+    .page-heading p {
+        color: #6c7480;
+        margin: 0;
+        font-size: 0.98rem;
+    }
+
+    .amenity-form-card {
+        background: #ffffff;
+        border: 1px solid #e2e6eb;
+        border-radius: 15px;
+        box-shadow: 0 7px 25px rgba(11, 31, 58, 0.08);
+        padding: 32px;
+    }
+
+    .form-section-title {
+        color: #0b1f3a;
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin: 0 0 5px;
+    }
+
+    .form-section-description {
+        color: #7a838f;
+        font-size: 0.88rem;
+        margin: 0 0 25px;
+    }
+
+    .form-group-custom {
+        margin-bottom: 22px;
+    }
+
+    .form-label-custom {
+        display: block;
+        color: #26384e;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .required-mark {
+        color: #b23838;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        border: 1px solid #d5dae1;
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        color: #26384e;
+        background: #ffffff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: #c9a227;
+        box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
+    }
+
+    textarea.form-control-custom {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .field-hint {
+        color: #8a929d;
+        font-size: 0.78rem;
+        margin-top: 6px;
+    }
+
+    .validation-summary {
+        background: #fdecec;
+        border: 1px solid #f2c5c5;
+        border-radius: 8px;
+        color: #8a2525;
+        padding: 13px 16px;
+        margin-bottom: 22px;
+    }
+
+    .field-validation-error {
+        display: block;
+        color: #a33131;
+        font-size: 0.8rem;
+        margin-top: 6px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        border-top: 1px solid #e7eaf0;
+        padding-top: 25px;
+        margin-top: 8px;
+    }
+
+    .cancel-button {
+        display: inline-block;
+        padding: 11px 19px;
+        border: 1px solid #cfd5dd;
+        border-radius: 7px;
+        color: #39485b;
+        background: #ffffff;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .cancel-button:hover {
+        background: #f4f6f8;
+        color: #0b1f3a;
+        text-decoration: none;
+    }
+
+    .save-button {
+        border: none;
+        border-radius: 7px;
+        padding: 12px 23px;
+        background: #c9a227;
+        color: #ffffff;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .save-button:hover {
+        background: #b18d1f;
+        transform: translateY(-1px);
+    }
+
+    .info-box {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        background: #f5f7fa;
+        border-left: 4px solid #c9a227;
+        border-radius: 7px;
+        padding: 14px 16px;
+        margin-bottom: 25px;
+        color: #5d6876;
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .info-icon {
+        color: #c9a227;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    @@media (max-width: 650px) {
+        .amenity-create-page {
+            padding: 35px 0 50px;
+        }
+
+        .amenity-form-card {
+            padding: 24px 20px;
+        }
+
+        .page-heading h1 {
+            font-size: 1.8rem;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .cancel-button,
+        .save-button {
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<div class="amenity-create-page">
+
+    <div class="amenity-create-container">
+
+        <a asp-action="Index" class="back-link">
+            ← Back to Amenities
+        </a>
+
+        <div class="page-heading">
+            <span class="page-eyebrow">PROPERTY FEATURES</span>
+
+            <h1>Add Amenity</h1>
+
+            <p>
+                Add a facility or feature that is available to guests
+                at Home Away From Home.
+            </p>
+        </div>
+
+        <div class="amenity-form-card">
+
+            <h2 class="form-section-title">
+                Amenity Information
+            </h2>
+
+            <p class="form-section-description">
+                Provide the name and description of the amenity.
+            </p>
+
+            <div class="info-box">
+                <span class="info-icon">ⓘ</span>
+
+                <span>
+                    The amenity will be added to the system and can
+                    be associated with properties separately.
+                </span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+            <form asp-action="Create" method="post">
 
-            <div class="form-group">
-                <label asp-for="PropertyAmenities" class="control-label"></label>
-                <input asp-for="PropertyAmenities" class="form-control" />
-                <span asp-validation-for="PropertyAmenities" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="validation-summary">
+                </div>
+
+                <div class="form-group-custom">
+
+                    <label asp-for="Name"
+                           class="form-label-custom">
+                        Amenity Name
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    <input asp-for="Name"
+                           class="form-control-custom"
+                           placeholder="e.g. Free Wi-Fi"
+                           maxlength="100"
+                           autocomplete="off" />
+
+                    <span asp-validation-for="Name"
+                          class="field-validation-error">
+                    </span>
+
+                    <div class="field-hint">
+                        Enter a clear name for the facility or feature.
+                    </div>
+
+                </div>
+
+                <div class="form-group-custom">
+
+                    <label asp-for="Description"
+                           class="form-label-custom">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control-custom"
+                              placeholder="Describe what guests can expect from this amenity..."
+                              maxlength="250">
+                    </textarea>
+
+                    <span asp-validation-for="Description"
+                          class="field-validation-error">
+                    </span>
+
+                    <div class="field-hint">
+                        Optional. Maximum 250 characters.
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+
+                    <a asp-action="Index"
+                       class="cancel-button">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="save-button">
+                        Add Amenity
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
