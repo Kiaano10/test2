@@ -1,72 +1,525 @@
 @model HomeAwayFromHome.Models.FinancialTransaction
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New Transaction";
 }
 
-<h1>Create</h1>
+<div class="hafh-page">
 
-<h4>FinancialTransaction</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="hafh-form-container">
 
-            <div class="form-group">
-                <label asp-for="PropertyID" class="control-label"></label>
-                <input asp-for="PropertyID" class="form-control" />
-                <span asp-validation-for="PropertyID" class="text-danger"></span>
+        <!-- HEADER -->
+
+        <div class="hafh-form-header">
+
+            <div>
+                <span class="hafh-eyebrow">FINANCIAL MANAGEMENT</span>
+
+                <h1>New Transaction</h1>
+
+                <p>
+                    Record an income or expense associated with a property.
+                </p>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Property" class="control-label"></label>
-                <input asp-for="Property" class="form-control" />
-                <span asp-validation-for="Property" class="text-danger"></span>
+            <a asp-action="Index"
+               class="hafh-btn hafh-btn-outline">
+                ← Back
+            </a>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <form asp-action="Create"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="hafh-validation-summary"></div>
+
+
+            <!-- PROPERTY -->
+
+            <div class="hafh-form-group">
+
+                <label asp-for="PropertyID">
+                    Property
+                </label>
+
+                <select asp-for="PropertyID"
+                        class="form-control">
+
+                    <option value="">
+                        Select a property
+                    </option>
+
+                    @if (ViewBag.Properties != null)
+                    {
+                        foreach (var property in ViewBag.Properties)
+                        {
+                            <option value="@property.PropertyID">
+                                @property.PropertyName
+                            </option>
+                        }
+                    }
+
+                </select>
+
+                <span asp-validation-for="PropertyID"
+                      class="text-danger"></span>
+
+                <small class="form-help">
+                    Select the property this transaction is associated with.
+                </small>
+
             </div>
 
-            <div class="form-group">
-                <label asp-for="BookingID" class="control-label"></label>
-                <input asp-for="BookingID" class="form-control" />
-                <span asp-validation-for="BookingID" class="text-danger"></span>
+
+            <!-- BOOKING -->
+
+            <div class="hafh-form-group">
+
+                <label asp-for="BookingID">
+                    Booking
+                    <span class="optional-label">
+                        Optional
+                    </span>
+                </label>
+
+                <select asp-for="BookingID"
+                        class="form-control">
+
+                    <option value="">
+                        No booking associated
+                    </option>
+
+                    @if (ViewBag.Bookings != null)
+                    {
+                        foreach (var booking in ViewBag.Bookings)
+                        {
+                            <option value="@booking.BookingID">
+                                Booking #@booking.BookingID
+                                -
+                                @booking.Property?.PropertyName
+                            </option>
+                        }
+                    }
+
+                </select>
+
+                <span asp-validation-for="BookingID"
+                      class="text-danger"></span>
+
+                <small class="form-help">
+                    You can link this transaction to a specific booking if applicable.
+                </small>
+
             </div>
 
-            <div class="form-group">
-                <label asp-for="Booking" class="control-label"></label>
-                <input asp-for="Booking" class="form-control" />
-                <span asp-validation-for="Booking" class="text-danger"></span>
+
+            <!-- TYPE + AMOUNT -->
+
+            <div class="hafh-form-row">
+
+                <div class="hafh-form-group">
+
+                    <label asp-for="TransactionType">
+                        Transaction Type
+                    </label>
+
+                    <select asp-for="TransactionType"
+                            class="form-control">
+
+                        <option value="">
+                            Select transaction type
+                        </option>
+
+                        <option value="Income">
+                            Income
+                        </option>
+
+                        <option value="Expense">
+                            Expense
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="TransactionType"
+                          class="text-danger"></span>
+
+                </div>
+
+
+                <div class="hafh-form-group">
+
+                    <label asp-for="Amount">
+                        Amount
+                    </label>
+
+                    <div class="amount-input-wrapper">
+
+                        <span class="currency-prefix">
+                            R
+                        </span>
+
+                        <input asp-for="Amount"
+                               type="number"
+                               class="form-control amount-input"
+                               min="0.01"
+                               max="10000000"
+                               step="0.01"
+                               placeholder="0.00" />
+
+                    </div>
+
+                    <span asp-validation-for="Amount"
+                          class="text-danger"></span>
+
+                </div>
+
             </div>
 
-            <div class="form-group">
-                <label asp-for="TransactionType" class="control-label"></label>
-                <input asp-for="TransactionType" class="form-control" />
-                <span asp-validation-for="TransactionType" class="text-danger"></span>
+
+            <!-- DESCRIPTION -->
+
+            <div class="hafh-form-group">
+
+                <label asp-for="Description">
+                    Description
+                </label>
+
+                <textarea asp-for="Description"
+                          class="form-control description-input"
+                          maxlength="250"
+                          rows="4"
+                          placeholder="Enter a description for this transaction..."></textarea>
+
+                <span asp-validation-for="Description"
+                      class="text-danger"></span>
+
+                <small class="form-help">
+                    Provide a clear description of the financial transaction.
+                </small>
+
             </div>
 
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+
+            <!-- DATE -->
+
+            <div class="hafh-form-group">
+
+                <label asp-for="TransactionDate">
+                    Transaction Date
+                </label>
+
+                <input asp-for="TransactionDate"
+                       type="date"
+                       class="form-control" />
+
+                <span asp-validation-for="TransactionDate"
+                      class="text-danger"></span>
+
             </div>
 
-            <div class="form-group">
-                <label asp-for="Amount" class="control-label"></label>
-                <input asp-for="Amount" class="form-control" />
-                <span asp-validation-for="Amount" class="text-danger"></span>
+
+            <!-- ACTIONS -->
+
+            <div class="hafh-form-actions">
+
+                <a asp-action="Index"
+                   class="hafh-btn hafh-btn-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="hafh-btn hafh-btn-gold">
+                    Add Transaction
+                </button>
+
             </div>
 
-            <div class="form-group">
-                <label asp-for="TransactionDate" class="control-label"></label>
-                <input asp-for="TransactionDate" class="form-control" />
-                <span asp-validation-for="TransactionDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
         </form>
+
     </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+
+    .hafh-page {
+        min-height: calc(100vh - 160px);
+        padding: 50px 24px;
+        background: #f7f8fb;
+    }
+
+    .hafh-form-container {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 40px;
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(11, 31, 58, .08);
+    }
+
+
+    /* HEADER */
+
+    .hafh-form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 25px;
+        margin-bottom: 35px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #e8ebf0;
+    }
+
+    .hafh-eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: #c9a227;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+
+    .hafh-form-header h1 {
+        margin: 0 0 8px;
+        color: #0b1f3a;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .hafh-form-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: .95rem;
+    }
+
+
+    /* FORM */
+
+    .hafh-form-group {
+        margin-bottom: 25px;
+    }
+
+    .hafh-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #0b1f3a;
+        font-size: .9rem;
+        font-weight: 600;
+    }
+
+    .optional-label {
+        margin-left: 6px;
+        color: #8a929f;
+        font-size: .72rem;
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        min-height: 48px;
+        padding: 12px 14px;
+        box-sizing: border-box;
+        border: 1px solid #d9dee7;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #0b1f3a;
+        font-size: .95rem;
+        transition: border-color .2s ease,
+                    box-shadow .2s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #c9a227;
+        box-shadow: 0 0 0 3px rgba(201, 162, 39, .12);
+    }
+
+    select.form-control {
+        cursor: pointer;
+    }
+
+    .description-input {
+        min-height: 110px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .form-help {
+        display: block;
+        margin-top: 7px;
+        color: #7a8290;
+        font-size: .8rem;
+    }
+
+
+    /* FORM ROW */
+
+    .hafh-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+
+    /* AMOUNT */
+
+    .amount-input-wrapper {
+        position: relative;
+    }
+
+    .currency-prefix {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        z-index: 2;
+        transform: translateY(-50%);
+        color: #7a8290;
+        font-size: .95rem;
+        font-weight: 600;
+        pointer-events: none;
+    }
+
+    .amount-input {
+        padding-left: 34px;
+    }
+
+
+    /* VALIDATION */
+
+    .hafh-validation-summary {
+        margin-bottom: 25px;
+        padding: 14px 18px;
+        border: 1px solid #f3b4ae;
+        border-radius: 10px;
+        background: #fff1f0;
+        color: #b42318;
+        font-size: .9rem;
+    }
+
+    .hafh-validation-summary:empty {
+        display: none;
+    }
+
+    .hafh-validation-summary ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .text-danger {
+        display: block;
+        margin-top: 6px;
+        color: #b42318 !important;
+        font-size: .82rem;
+    }
+
+
+    /* ACTIONS */
+
+    .hafh-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #e8ebf0;
+    }
+
+    .hafh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        font-size: .9rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .hafh-btn-gold {
+        background: #c9a227;
+        color: #ffffff;
+    }
+
+    .hafh-btn-gold:hover {
+        background: #ad8b1e;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    .hafh-btn-outline {
+        background: #ffffff;
+        color: #0b1f3a;
+        border: 1px solid #d9dee7;
+    }
+
+    .hafh-btn-outline:hover {
+        background: #f7f8fb;
+        color: #0b1f3a;
+        border-color: #0b1f3a;
+    }
+
+    .hafh-btn-secondary {
+        background: #eef1f5;
+        color: #0b1f3a;
+    }
+
+    .hafh-btn-secondary:hover {
+        background: #e2e6ec;
+        color: #0b1f3a;
+    }
+
+
+    @@media (max-width: 650px) {
+
+        .hafh-page {
+            padding: 30px 15px;
+        }
+
+        .hafh-form-container {
+            padding: 25px 20px;
+        }
+
+        .hafh-form-header {
+            flex-direction: column;
+        }
+
+        .hafh-form-header h1 {
+            font-size: 1.7rem;
+        }
+
+        .hafh-form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .hafh-form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .hafh-form-actions .hafh-btn {
+            width: 100%;
+        }
+
+    }
+
+</style>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

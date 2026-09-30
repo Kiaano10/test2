@@ -34,23 +34,70 @@ public class FinancialTransactionsController : Controller
 
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(FinancialTransaction model) 
-    { 
-        if (!ModelState.IsValid) 
-        { 
-            await LoadLists(); 
-            return View(model); 
-        } 
-        try 
-        { 
-            await _api.CreateAsync(model); 
-            return RedirectToAction(nameof(Index)); 
+    public async Task<IActionResult> Create(FinancialTransaction model)
+    {
+        // Property and Booking are navigation properties.
+        // They are not submitted by the Create form.
+        ModelState.Remove(nameof(FinancialTransaction.Property));
+        ModelState.Remove(nameof(FinancialTransaction.Booking));
+
+        if (model.PropertyID <= 0)
+        {
+            ModelState.AddModelError(
+                nameof(FinancialTransaction.PropertyID),
+                "Please select a property."
+            );
         }
-        catch (HttpRequestException ex) 
-        { 
-            ModelState.AddModelError("", ex.Message); 
-            await LoadLists(); return View(model); 
-        } 
+
+        if (string.IsNullOrWhiteSpace(model.TransactionType))
+        {
+            ModelState.AddModelError(
+                nameof(FinancialTransaction.TransactionType),
+                "Please select a transaction type."
+            );
+        }
+
+        if (model.Amount <= 0)
+        {
+            ModelState.AddModelError(
+                nameof(FinancialTransaction.Amount),
+                "Amount must be greater than zero."
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Description))
+        {
+            ModelState.AddModelError(
+                nameof(FinancialTransaction.Description),
+                "Please provide a description."
+            );
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await LoadLists();
+            return View(model);
+        }
+
+        try
+        {
+            await _api.CreateAsync(model);
+
+            TempData["Success"] =
+                "The financial transaction was added successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
+        catch (HttpRequestException ex)
+        {
+            ModelState.AddModelError(
+                "",
+                $"Unable to add the transaction. {ex.Message}"
+            );
+
+            await LoadLists();
+            return View(model);
+        }
     }
 
 
