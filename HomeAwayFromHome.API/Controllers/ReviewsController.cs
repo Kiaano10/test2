@@ -91,5 +91,24 @@ namespace HomeAwayFromHome.API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin,Owner")]
+        public async Task<IActionResult> GetAll()
+        {
+            var reviews = await _service.GetAllAsync();
+
+            return Ok(reviews.Select(r => new
+            {
+                r.ReviewID,
+                r.UserID,
+                Reviewer = $"{r.User.FirstName} {r.User.LastName}",
+                r.BookingID,
+                r.Rating,
+                r.Comment,
+                r.Status,
+                r.CreatedAt
+            }));
+        }
     }
 }

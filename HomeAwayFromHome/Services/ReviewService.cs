@@ -69,5 +69,15 @@ namespace HomeAwayFromHome.Services
 
             return true;
         }
+
+        public async Task<List<Review>> GetAllAsync()
+        {
+            return await _context.Review
+                .AsNoTracking()
+                .Include(r => r.User)
+                .Include(r => r.Booking)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+        }
     }
 }
