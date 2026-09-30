@@ -1,6 +1,7 @@
 using HomeAwayFromHome.Models;
 using HomeAwayFromHome.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 public class PropertiesController : Controller
 {
@@ -21,8 +22,7 @@ public class PropertiesController : Controller
         }
         catch (HttpRequestException)
         {
-            TempData["Error"] =
-                "Unable to retrieve properties from the API.";
+            TempData["Error"] = "Unable to retrieve properties from the API.";
             return View(new List<Property>());
         }
     }
@@ -41,12 +41,12 @@ public class PropertiesController : Controller
         }
         catch (HttpRequestException)
         {
-            return Problem(
-                "Unable to retrieve the property from the API.");
+            return Problem("Unable to retrieve the property from the API.");
         }
     }
 
     // GET: Properties/Create
+    [Authorize(Roles = "Admin,Owner")]
     public IActionResult Create()
     {
         return View();
@@ -55,9 +55,9 @@ public class PropertiesController : Controller
     // POST: Properties/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Owner")]
     public async Task<IActionResult> Create(
-        [Bind("PropertyName,Description,Address,MaximumGuests," +
-              "Bedrooms,Bathrooms,PricePerNight")]
+        [Bind("PropertyName,Description,Address,MaximumGuests," + "Bedrooms,Bathrooms,PricePerNight")]
         Property property)
     {
         if (!ModelState.IsValid)
@@ -70,14 +70,13 @@ public class PropertiesController : Controller
         }
         catch (HttpRequestException)
         {
-            ModelState.AddModelError("",
-                "Unable to create the property. " +
-                "Check the API and your permissions.");
+            ModelState.AddModelError("", "Unable to create the property. " + "Check the API and your permissions.");
             return View(property);
         }
     }
 
     // GET: Properties/Edit/5
+    [Authorize(Roles = "Admin,Owner")]
     public async Task<IActionResult> Edit(int id)
     {
         try
@@ -91,18 +90,17 @@ public class PropertiesController : Controller
         }
         catch (HttpRequestException)
         {
-            return Problem(
-                "Unable to retrieve the property from the API.");
+            return Problem("Unable to retrieve the property from the API.");
         }
     }
 
     // POST: Properties/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Owner")]
     public async Task<IActionResult> Edit(
         int id,
-        [Bind("PropertyID,PropertyName,Description,Address," +
-              "MaximumGuests,Bedrooms,Bathrooms,PricePerNight")]
+        [Bind("PropertyID,PropertyName,Description,Address," + "MaximumGuests,Bedrooms,Bathrooms,PricePerNight")]
         Property property)
     {
         if (id != property.PropertyID)
@@ -118,14 +116,13 @@ public class PropertiesController : Controller
         }
         catch (HttpRequestException)
         {
-            ModelState.AddModelError("",
-                "Unable to update the property. " +
-                "Check the API and your permissions.");
+            ModelState.AddModelError("", "Unable to update the property. " + "Check the API and your permissions.");
             return View(property);
         }
     }
 
     // GET: Properties/Delete/5
+    [Authorize(Roles = "Admin,Owner")]
     public async Task<IActionResult> Delete(int id)
     {
         try
@@ -139,14 +136,14 @@ public class PropertiesController : Controller
         }
         catch (HttpRequestException)
         {
-            return Problem(
-                "Unable to retrieve the property from the API.");
+            return Problem("Unable to retrieve the property from the API.");
         }
     }
 
     // POST: Properties/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Owner")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         try
@@ -156,9 +153,7 @@ public class PropertiesController : Controller
         }
         catch (HttpRequestException)
         {
-            TempData["Error"] =
-                "Unable to delete the property. " +
-                "It may have existing bookings or you may lack permission.";
+            TempData["Error"] = "Unable to delete the property. " + "It may have existing bookings or you may lack permission.";
 
             return RedirectToAction(nameof(Delete), new { id });
         }

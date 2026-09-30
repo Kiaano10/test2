@@ -1,150 +1,75 @@
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using HomeAwayFromHome.Models;
-using HomeAwayFromHome.Data;
+using HomeAwayFromHome.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HomeAwayFromHome.Controllers;
 
 public class ReviewsController : Controller
 {
-    private readonly ApplicationDbContext _context;
-
-    public ReviewsController(ApplicationDbContext context)
-    {
-        _context = context;
+    private readonly ReviewApiService _api;
+    private readonly PropertyApiService _properties;
+    private readonly BookingApiService _bookings;
+    public ReviewsController(ReviewApiService api, PropertyApiService properties, BookingApiService bookings) 
+    { 
+        _api = api; _properties = properties; 
+        _bookings = bookings; 
     }
 
-    // GET: REVIEWS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Review.ToListAsync());
+    [Authorize(Roles = "Admin,Owner")] 
+    public async Task<IActionResult> Index() 
+    { 
+        return View(await _api.GetAllAsync()); 
     }
 
-    // GET: REVIEWS/Details/5
-    public async Task<IActionResult> Details(int? reviewid)
-    {
-        if (reviewid == null)
-        {
-            return NotFound();
-        }
 
-        var review = await _context.Review
-            .FirstOrDefaultAsync(m => m.ReviewID == reviewid);
-        if (review == null)
-        {
-            return NotFound();
-        }
-
-        return View(review);
+    [AllowAnonymous] 
+    public async Task<IActionResult> Property(int propertyId) 
+    { 
+        ViewBag.PropertyId = propertyId; 
+        return View("Index", await _api.GetByPropertyAsync(propertyId)); 
     }
 
-    // GET: REVIEWS/Create
-    public IActionResult Create()
-    {
-        return View();
+
+    [Authorize] 
+    public async Task<IActionResult> Create() 
+    { 
+        ViewBag.Bookings = (await _bookings.GetMineAsync()).Where(b => b.Status == "Completed").ToList(); 
+        return View(new Review()); 
     }
 
-    // POST: REVIEWS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("ReviewID,UserID,User,BookingID,Booking,Rating,Comment,CreatedAt,Status")] Review review)
+
+    [HttpPost, ValidateAntiForgeryToken, Authorize]
+    public async Task<IActionResult> Create(Review model) 
     {
-        if (ModelState.IsValid)
-        {
-            _context.Add(review);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        if (!ModelState.IsValid) 
+        { 
+            ViewBag.Bookings = (await _bookings.GetMineAsync()).Where(b => b.Status == "Completed").ToList(); 
+            return View(model); 
         }
-        return View(review);
+        try 
+        { 
+            await _api.CreateAsync(model); 
+            TempData["Success"] = "Review submitted for moderation."; 
+            return RedirectToAction("Index", "Home"); 
+        } catch (HttpRequestException ex) 
+        { 
+            ModelState.AddModelError("", ex.Message); 
+            ViewBag.Bookings = (await _bookings.GetMineAsync()).Where(b => b.Status == "Completed").ToList(); 
+            return View(model); 
+        } 
     }
 
-    // GET: REVIEWS/Edit/5
-    public async Task<IActionResult> Edit(int? reviewid)
-    {
-        if (reviewid == null)
-        {
-            return NotFound();
-        }
-
-        var review = await _context.Review.FindAsync(reviewid);
-        if (review == null)
-        {
-            return NotFound();
-        }
-        return View(review);
+    [Authorize(Roles = "Admin,Owner")] 
+    public async Task<IActionResult> Details(int id) 
+    { 
+        var x = (await _api.GetAllAsync()).FirstOrDefault(r => r.ReviewID == id); return x == null ? NotFound() : View(x); 
     }
 
-    // POST: REVIEWS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? reviewid, [Bind("ReviewID,UserID,User,BookingID,Booking,Rating,Comment,CreatedAt,Status")] Review review)
-    {
-        if (reviewid != review.ReviewID)
-        {
-            return NotFound();
-        }
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(review);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReviewExists(review.ReviewID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(review);
-    }
-
-    // GET: REVIEWS/Delete/5
-    public async Task<IActionResult> Delete(int? reviewid)
-    {
-        if (reviewid == null)
-        {
-            return NotFound();
-        }
-
-        var review = await _context.Review
-            .FirstOrDefaultAsync(m => m.ReviewID == reviewid);
-        if (review == null)
-        {
-            return NotFound();
-        }
-
-        return View(review);
-    }
-
-    // POST: REVIEWS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? reviewid)
-    {
-        var review = await _context.Review.FindAsync(reviewid);
-        if (review != null)
-        {
-            _context.Review.Remove(review);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool ReviewExists(int? reviewid)
-    {
-        return _context.Review.Any(e => e.ReviewID == reviewid);
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin,Owner")] 
+    public async Task<IActionResult> Moderate(int id, string status) 
+    { 
+        await _api.ModerateAsync(id, status); return RedirectToAction(nameof(Index)); 
     }
 }

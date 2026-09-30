@@ -1,0 +1,11 @@
+@{ ViewData["Title"] = "Management Dashboard"; }
+<div class="container py-4">
+    <div class="mb-4"><span class="text-muted">MANAGEMENT</span><h1>Dashboard</h1><p class="text-muted">Overview of Home Away From Home.</p></div>
+    <div class="row g-3">
+        <div class="col-md-3"><div class="card p-3"><small>Properties</small><h2>@ViewBag.PropertyCount</h2></div></div>
+        <div class="col-md-3"><div class="card p-3"><small>Bookings</small><h2>@ViewBag.BookingCount</h2></div></div>
+        <div class="col-md-3"><div class="card p-3"><small>Pending Bookings</small><h2>@ViewBag.PendingBookings</h2></div></div>
+        <div class="col-md-3"><div class="card p-3"><small>Customers</small><h2>@ViewBag.CustomerCount</h2></div></div>
+    </div>
+    <div class="card p-4 mt-4"><h3>Current Month</h3><div class="row"><div class="col-md-4">Income<br/><strong>R @(((decimal)ViewBag.MonthIncome).ToString("N2"))</strong></div><div class="col-md-4">Expenses<br/><strong>R @(((decimal)ViewBag.MonthExpenses).ToString("N2"))</strong></div><div class="col-md-4">Profit/Loss<br/><strong>R @(((decimal)ViewBag.MonthProfit).ToString("N2"))</strong></div></div></div>
+</div>

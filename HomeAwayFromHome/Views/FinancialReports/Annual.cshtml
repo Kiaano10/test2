@@ -1,0 +1,3 @@
+@model IEnumerable<HomeAwayFromHome.ViewModels.MonthlyFinancialReport>
+@{ViewData["Title"]="Annual P&L";}
+<div class="container py-4"><h1>Annual Profit & Loss - @ViewBag.Year</h1><table class="table table-striped"><thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Profit/Loss</th></tr></thead><tbody>@foreach(var x in Model){<tr><td>@x.Month</td><td>R @x.TotalIncome.ToString("N2")</td><td>R @x.TotalExpenses.ToString("N2")</td><td>R @x.Profit.ToString("N2")</td></tr>}</tbody></table><a asp-action="Monthly" class="btn btn-outline-primary">Monthly Report</a></div>

@@ -1,150 +1,94 @@
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using HomeAwayFromHome.Models;
-using HomeAwayFromHome.Data;
+using HomeAwayFromHome.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HomeAwayFromHome.Controllers;
 
 public class AmenitiesController : Controller
 {
-    private readonly ApplicationDbContext _context;
-
-    public AmenitiesController(ApplicationDbContext context)
-    {
-        _context = context;
+    private readonly AmenityApiService _api;
+    public AmenitiesController(AmenityApiService api) => _api = api;
+    public async Task<IActionResult> Index() => View(await _api.GetAllAsync());
+    public async Task<IActionResult> Details(int id) 
+    { 
+        var x = await _api.GetByIdAsync(id); 
+        return x == null ? NotFound() : View(x); 
     }
 
-    // GET: AMENITYS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Amenity.ToListAsync());
+
+    [Authorize(Roles = "Admin,Owner")]
+    public IActionResult Create() => View(new Amenity());
+
+
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin,Owner")]
+    public async Task<IActionResult> Create(Amenity model) 
+    { 
+        if (!ModelState.IsValid) 
+            return View(model); 
+
+        try 
+        { 
+            await _api.CreateAsync(model); 
+            return RedirectToAction(nameof(Index)); 
+        } 
+        catch (HttpRequestException ex) 
+        { 
+            ModelState.AddModelError("", ex.Message); 
+            return View(model); 
+        } 
     }
 
-    // GET: AMENITYS/Details/5
-    public async Task<IActionResult> Details(int? amenityid)
-    {
-        if (amenityid == null)
-        {
-            return NotFound();
-        }
 
-        var amenity = await _context.Amenity
-            .FirstOrDefaultAsync(m => m.AmenityID == amenityid);
-        if (amenity == null)
-        {
-            return NotFound();
-        }
-
-        return View(amenity);
+    [Authorize(Roles = "Admin,Owner")]
+    public async Task<IActionResult> Edit(int id) 
+    { 
+        var x = await _api.GetByIdAsync(id); 
+        return x == null ? NotFound() : View(x); 
     }
 
-    // GET: AMENITYS/Create
-    public IActionResult Create()
-    {
-        return View();
+
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin,Owner")]
+    public async Task<IActionResult> Edit(int id, Amenity model) 
+    { 
+        if (id != model.AmenityID) 
+            return NotFound(); 
+        
+        if (!ModelState.IsValid) 
+            return View(model); 
+        
+        try 
+        { 
+            await _api.UpdateAsync(id, model); 
+            return RedirectToAction(nameof(Index)); 
+        } 
+        catch (HttpRequestException ex) 
+        { 
+            ModelState.AddModelError("", ex.Message); 
+            return View(model); 
+        } 
     }
 
-    // POST: AMENITYS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("AmenityID,Name,Description,PropertyAmenities")] Amenity amenity)
-    {
-        if (ModelState.IsValid)
-        {
-            _context.Add(amenity);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(amenity);
+
+    [Authorize(Roles = "Admin,Owner")]
+    public async Task<IActionResult> Delete(int id) 
+    { 
+        var x = await _api.GetByIdAsync(id); 
+        return x == null ? NotFound() : View(x); 
     }
 
-    // GET: AMENITYS/Edit/5
-    public async Task<IActionResult> Edit(int? amenityid)
-    {
-        if (amenityid == null)
-        {
-            return NotFound();
-        }
-
-        var amenity = await _context.Amenity.FindAsync(amenityid);
-        if (amenity == null)
-        {
-            return NotFound();
-        }
-        return View(amenity);
-    }
-
-    // POST: AMENITYS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? amenityid, [Bind("AmenityID,Name,Description,PropertyAmenities")] Amenity amenity)
-    {
-        if (amenityid != amenity.AmenityID)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(amenity);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AmenityExists(amenity.AmenityID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(amenity);
-    }
-
-    // GET: AMENITYS/Delete/5
-    public async Task<IActionResult> Delete(int? amenityid)
-    {
-        if (amenityid == null)
-        {
-            return NotFound();
-        }
-
-        var amenity = await _context.Amenity
-            .FirstOrDefaultAsync(m => m.AmenityID == amenityid);
-        if (amenity == null)
-        {
-            return NotFound();
-        }
-
-        return View(amenity);
-    }
-
-    // POST: AMENITYS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? amenityid)
-    {
-        var amenity = await _context.Amenity.FindAsync(amenityid);
-        if (amenity != null)
-        {
-            _context.Amenity.Remove(amenity);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool AmenityExists(int? amenityid)
-    {
-        return _context.Amenity.Any(e => e.AmenityID == amenityid);
+    [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken, Authorize(Roles = "Admin,Owner")]
+    public async Task<IActionResult> DeleteConfirmed(int id) 
+    { 
+        try 
+        { 
+            await _api.DeleteAsync(id); 
+            return RedirectToAction(nameof(Index)); 
+        } 
+        catch (HttpRequestException) 
+        { 
+            TempData["Error"] = "The amenity could not be deleted. It may still be assigned to a property."; 
+            return RedirectToAction(nameof(Index)); 
+        } 
     }
 }

@@ -1,150 +1,118 @@
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using HomeAwayFromHome.Models;
-using HomeAwayFromHome.Data;
+using HomeAwayFromHome.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HomeAwayFromHome.Controllers;
 
 public class AvailabilitiesController : Controller
 {
-    private readonly ApplicationDbContext _context;
-
-    public AvailabilitiesController(ApplicationDbContext context)
-    {
-        _context = context;
+    private readonly AvailabilityApiService _api;
+    private readonly PropertyApiService _properties;
+    public AvailabilitiesController(AvailabilityApiService api, PropertyApiService properties) 
+    { 
+        _api = api; 
+        _properties = properties; 
+    }
+    public async Task<IActionResult> Index(int? propertyId) 
+    { 
+        if (propertyId.HasValue) 
+        { 
+            ViewBag.PropertyId = propertyId; 
+            return View(await _api.GetByPropertyAsync(propertyId.Value)); 
+        } 
+        var properties = await _properties.GetAllAsync(); 
+        ViewBag.Properties = properties; 
+        var all = new List<Availability>(); 
+        foreach (var p in properties) 
+        { 
+            all.AddRange(await _api.GetByPropertyAsync(p.PropertyID)); 
+        } 
+        return View(all); 
     }
 
-    // GET: AVAILABILITYS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Availability.ToListAsync());
+    [AllowAnonymous] 
+    public async Task<IActionResult> Details(int id, int propertyId) 
+    { 
+        var x = (await _api.GetByPropertyAsync(propertyId)).FirstOrDefault(a => a.AvailabilityID == id); 
+        return x == null ? NotFound() : View(x); 
     }
 
-    // GET: AVAILABILITYS/Details/5
-    public async Task<IActionResult> Details(int? availabilityid)
-    {
-        if (availabilityid == null)
-        {
-            return NotFound();
-        }
-
-        var availability = await _context.Availability
-            .FirstOrDefaultAsync(m => m.AvailabilityID == availabilityid);
-        if (availability == null)
-        {
-            return NotFound();
-        }
-
-        return View(availability);
+    [Authorize(Roles = "Admin,Owner")] 
+    public async Task<IActionResult> Create(int? propertyId) 
+    { 
+        ViewBag.Properties = await _properties.GetAllAsync(); 
+        return View(new Availability 
+        { PropertyID = propertyId ?? 0, Status = "Available" }); 
     }
 
-    // GET: AVAILABILITYS/Create
-    public IActionResult Create()
-    {
-        return View();
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin,Owner")] 
+    public async Task<IActionResult> Create(Availability model) 
+    { 
+        if (!ModelState.IsValid) 
+        { 
+            ViewBag.Properties = await _properties.GetAllAsync(); 
+            return View(model); 
+        } 
+        try 
+        { 
+            await _api.CreateAsync(model); 
+            return RedirectToAction(nameof(Index), new { propertyId = model.PropertyID }); 
+        } 
+        catch (HttpRequestException ex) 
+        { 
+            ModelState.AddModelError("", ex.Message); 
+            ViewBag.Properties = await _properties.GetAllAsync(); 
+            return View(model); 
+        } 
     }
 
-    // POST: AVAILABILITYS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("AvailabilityID,PropertyID,Property,AvailableFrom,AvailableTo,Status")] Availability availability)
-    {
-        if (ModelState.IsValid)
-        {
-            _context.Add(availability);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(availability);
+
+    [Authorize(Roles = "Admin,Owner")] 
+    public async Task<IActionResult> Edit(int id, int propertyId) 
+    { 
+        var x = (await _api.GetByPropertyAsync(propertyId)).FirstOrDefault(a => a.AvailabilityID == id); 
+        return x == null ? NotFound() : View(x); 
     }
 
-    // GET: AVAILABILITYS/Edit/5
-    public async Task<IActionResult> Edit(int? availabilityid)
-    {
-        if (availabilityid == null)
-        {
-            return NotFound();
-        }
 
-        var availability = await _context.Availability.FindAsync(availabilityid);
-        if (availability == null)
-        {
-            return NotFound();
-        }
-        return View(availability);
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin,Owner")] 
+    public async Task<IActionResult> Edit(int id, Availability model) 
+    { 
+        if (id != model.AvailabilityID) 
+            return NotFound(); 
+        
+        if (!ModelState.IsValid) 
+            return View(model); 
+        
+        try 
+        { 
+            await _api.UpdateAsync(id, model); 
+            return RedirectToAction(nameof(Index), new { propertyId = model.PropertyID }); 
+        } 
+        catch (HttpRequestException ex) 
+        { ModelState.AddModelError("", ex.Message); 
+            return View(model); 
+        } 
     }
 
-    // POST: AVAILABILITYS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? availabilityid, [Bind("AvailabilityID,PropertyID,Property,AvailableFrom,AvailableTo,Status")] Availability availability)
-    {
-        if (availabilityid != availability.AvailabilityID)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(availability);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AvailabilityExists(availability.AvailabilityID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(availability);
+    [Authorize(Roles = "Admin,Owner")] 
+    public async Task<IActionResult> Delete(int id, int propertyId) 
+    { 
+        var x = (await _api.GetByPropertyAsync(propertyId)).FirstOrDefault(a => a.AvailabilityID == id); 
+        return x == null ? NotFound() : View(x); 
     }
 
-    // GET: AVAILABILITYS/Delete/5
-    public async Task<IActionResult> Delete(int? availabilityid)
-    {
-        if (availabilityid == null)
-        {
-            return NotFound();
-        }
-
-        var availability = await _context.Availability
-            .FirstOrDefaultAsync(m => m.AvailabilityID == availabilityid);
-        if (availability == null)
-        {
-            return NotFound();
-        }
-
-        return View(availability);
-    }
-
-    // POST: AVAILABILITYS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? availabilityid)
-    {
-        var availability = await _context.Availability.FindAsync(availabilityid);
-        if (availability != null)
-        {
-            _context.Availability.Remove(availability);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool AvailabilityExists(int? availabilityid)
-    {
-        return _context.Availability.Any(e => e.AvailabilityID == availabilityid);
+    [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken, Authorize(Roles = "Admin,Owner")] 
+    public async Task<IActionResult> DeleteConfirmed(int id, int propertyId) 
+    { 
+        try 
+        { 
+            await _api.DeleteAsync(id); 
+            return RedirectToAction(nameof(Index), new { propertyId }); 
+        } 
+        catch (HttpRequestException) 
+        { return RedirectToAction(nameof(Delete), new { id, propertyId }); 
+        } 
     }
 }

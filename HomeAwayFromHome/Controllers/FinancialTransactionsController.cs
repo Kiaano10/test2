@@ -1,150 +1,111 @@
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using HomeAwayFromHome.Models;
-using HomeAwayFromHome.Data;
+using HomeAwayFromHome.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
+namespace HomeAwayFromHome.Controllers;
+
+[Authorize(Roles = "Admin,Owner")]
 public class FinancialTransactionsController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly FinancialTransactionApiService _api;
+    private readonly PropertyApiService _properties;
+    private readonly BookingApiService _bookings;
+    public FinancialTransactionsController(FinancialTransactionApiService api, PropertyApiService properties, BookingApiService bookings) 
+    { 
+        _api = api; _properties = properties; 
+        _bookings = bookings; 
+    }
+    public async Task<IActionResult> Index() => View(await _api.GetAllAsync());
 
-    public FinancialTransactionsController(ApplicationDbContext context)
-    {
-        _context = context;
+    public async Task<IActionResult> Details(int id) 
+    { 
+        var x = await _api.GetByIdAsync(id); 
+        return x == null ? NotFound() : View(x); 
     }
 
-    // GET: FINANCIALTRANSACTIONS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.FinancialTransaction.ToListAsync());
+    public async Task<IActionResult> Create() 
+    { 
+        ViewBag.Properties = await _properties.GetAllAsync(); 
+        ViewBag.Bookings = await _bookings.GetAllAsync(); 
+        return View(new FinancialTransaction { 
+            TransactionDate = DateTime.Today }); 
     }
 
-    // GET: FINANCIALTRANSACTIONS/Details/5
-    public async Task<IActionResult> Details(int? financialtransactionid)
-    {
-        if (financialtransactionid == null)
-        {
-            return NotFound();
-        }
 
-        var financialtransaction = await _context.FinancialTransaction
-            .FirstOrDefaultAsync(m => m.FinancialTransactionID == financialtransactionid);
-        if (financialtransaction == null)
-        {
-            return NotFound();
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(FinancialTransaction model) 
+    { 
+        if (!ModelState.IsValid) 
+        { 
+            await LoadLists(); 
+            return View(model); 
+        } 
+        try 
+        { 
+            await _api.CreateAsync(model); 
+            return RedirectToAction(nameof(Index)); 
         }
-
-        return View(financialtransaction);
+        catch (HttpRequestException ex) 
+        { 
+            ModelState.AddModelError("", ex.Message); 
+            await LoadLists(); return View(model); 
+        } 
     }
 
-    // GET: FINANCIALTRANSACTIONS/Create
-    public IActionResult Create()
-    {
-        return View();
+
+    public async Task<IActionResult> Edit(int id) 
+    { 
+        var x = await _api.GetByIdAsync(id); 
+
+        if (x == null) 
+            return NotFound(); 
+
+        await LoadLists(); 
+        return View(x); 
     }
 
-    // POST: FINANCIALTRANSACTIONS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("FinancialTransactionID,PropertyID,Property,BookingID,Booking,TransactionType,Description,Amount,TransactionDate")] FinancialTransaction financialtransaction)
-    {
-        if (ModelState.IsValid)
-        {
-            _context.Add(financialtransaction);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(financialtransaction);
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, FinancialTransaction model) 
+    { 
+        if (id != model.FinancialTransactionID) 
+            return NotFound(); 
+
+        if (!ModelState.IsValid) 
+        { 
+            await LoadLists(); 
+            return View(model); 
+        } 
+        try 
+        { 
+            await _api.UpdateAsync(id, model); 
+            return RedirectToAction(nameof(Index)); 
+        } 
+        catch (HttpRequestException ex) 
+        { 
+            ModelState.AddModelError("", ex.Message); 
+            await LoadLists(); 
+            return View(model); 
+        } 
     }
 
-    // GET: FINANCIALTRANSACTIONS/Edit/5
-    public async Task<IActionResult> Edit(int? financialtransactionid)
-    {
-        if (financialtransactionid == null)
-        {
-            return NotFound();
-        }
-
-        var financialtransaction = await _context.FinancialTransaction.FindAsync(financialtransactionid);
-        if (financialtransaction == null)
-        {
-            return NotFound();
-        }
-        return View(financialtransaction);
+    public async Task<IActionResult> Delete(int id) 
+    { 
+        var x = await _api.GetByIdAsync(id); 
+        return x == null ? NotFound() : View(x); 
     }
 
-    // POST: FINANCIALTRANSACTIONS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? financialtransactionid, [Bind("FinancialTransactionID,PropertyID,Property,BookingID,Booking,TransactionType,Description,Amount,TransactionDate")] FinancialTransaction financialtransaction)
-    {
-        if (financialtransactionid != financialtransaction.FinancialTransactionID)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(financialtransaction);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FinancialTransactionExists(financialtransaction.FinancialTransactionID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(financialtransaction);
+    [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id) 
+    { 
+        await _api.DeleteAsync(id); 
+        return RedirectToAction(nameof(Index)); 
     }
 
-    // GET: FINANCIALTRANSACTIONS/Delete/5
-    public async Task<IActionResult> Delete(int? financialtransactionid)
-    {
-        if (financialtransactionid == null)
-        {
-            return NotFound();
-        }
-
-        var financialtransaction = await _context.FinancialTransaction
-            .FirstOrDefaultAsync(m => m.FinancialTransactionID == financialtransactionid);
-        if (financialtransaction == null)
-        {
-            return NotFound();
-        }
-
-        return View(financialtransaction);
-    }
-
-    // POST: FINANCIALTRANSACTIONS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? financialtransactionid)
-    {
-        var financialtransaction = await _context.FinancialTransaction.FindAsync(financialtransactionid);
-        if (financialtransaction != null)
-        {
-            _context.FinancialTransaction.Remove(financialtransaction);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool FinancialTransactionExists(int? financialtransactionid)
-    {
-        return _context.FinancialTransaction.Any(e => e.FinancialTransactionID == financialtransactionid);
+    private async Task LoadLists() 
+    { 
+        ViewBag.Properties = await _properties.GetAllAsync(); 
+        ViewBag.Bookings = await _bookings.GetAllAsync(); 
     }
 }
