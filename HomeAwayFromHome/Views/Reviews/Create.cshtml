@@ -1,72 +1,370 @@
 @model HomeAwayFromHome.Models.Review
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add Review";
 }
 
-<h1>Create</h1>
+<style>
+    .review-page {
+        max-width: 850px;
+        margin: 40px auto 80px;
+        padding: 0 24px;
+    }
 
-<h4>Review</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    .review-header {
+        margin-bottom: 30px;
+    }
 
-            <div class="form-group">
-                <label asp-for="UserID" class="control-label"></label>
-                <input asp-for="UserID" class="form-control" />
-                <span asp-validation-for="UserID" class="text-danger"></span>
-            </div>
+    .review-header h1 {
+        margin: 0 0 8px;
+        color: #0b1f3a;
+        font-size: 34px;
+        font-weight: 700;
+    }
 
-            <div class="form-group">
-                <label asp-for="User" class="control-label"></label>
-                <input asp-for="User" class="form-control" />
-                <span asp-validation-for="User" class="text-danger"></span>
-            </div>
+    .review-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 16px;
+    }
 
-            <div class="form-group">
-                <label asp-for="BookingID" class="control-label"></label>
-                <input asp-for="BookingID" class="form-control" />
-                <span asp-validation-for="BookingID" class="text-danger"></span>
-            </div>
+    .review-card {
+        background: white;
+        border: 1px solid #e2e7ee;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(11, 31, 58, 0.06);
+        padding: 32px;
+    }
 
-            <div class="form-group">
-                <label asp-for="Booking" class="control-label"></label>
-                <input asp-for="Booking" class="form-control" />
-                <span asp-validation-for="Booking" class="text-danger"></span>
-            </div>
+    .validation-summary {
+        margin-bottom: 24px;
+        padding: 14px 18px;
+        border: 1px solid #f2b8b5;
+        border-radius: 10px;
+        background: #fff4f3;
+        color: #b42318;
+    }
 
-            <div class="form-group">
-                <label asp-for="Rating" class="control-label"></label>
-                <input asp-for="Rating" class="form-control" />
-                <span asp-validation-for="Rating" class="text-danger"></span>
-            </div>
+    .validation-summary:empty {
+        display: none;
+    }
 
-            <div class="form-group">
-                <label asp-for="Comment" class="control-label"></label>
-                <input asp-for="Comment" class="form-control" />
-                <span asp-validation-for="Comment" class="text-danger"></span>
-            </div>
+    .form-group {
+        margin-bottom: 24px;
+    }
 
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
+    .form-label {
+        display: block;
+        margin-bottom: 9px;
+        color: #0b1f3a;
+        font-size: 15px;
+        font-weight: 600;
+    }
 
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    .optional-label {
+        margin-left: 6px;
+        color: #8a93a1;
+        font-size: 13px;
+        font-weight: 400;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        min-height: 54px;
+        padding: 13px 16px;
+        border: 1px solid #d7dee8;
+        border-radius: 10px;
+        background: #fff;
+        color: #0b1f3a;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #c9a227;
+        box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
+    }
+
+    textarea.form-control {
+        min-height: 160px;
+        resize: vertical;
+    }
+
+    .rating-options {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .rating-option {
+        position: relative;
+    }
+
+    .rating-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .rating-option label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 50px;
+        border: 1px solid #d7dee8;
+        border-radius: 10px;
+        background: white;
+        color: #0b1f3a;
+        font-size: 17px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .rating-option label:hover {
+        border-color: #c9a227;
+        background: #fffdf5;
+    }
+
+    .rating-option input:checked + label {
+        border-color: #c9a227;
+        background: #c9a227;
+        color: white;
+    }
+
+    .rating-help {
+        margin-top: 10px;
+        color: #8a93a1;
+        font-size: 13px;
+    }
+
+    .field-help {
+        margin-top: 7px;
+        color: #8a93a1;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .field-validation {
+        display: block;
+        margin-top: 6px;
+        color: #b42318;
+        font-size: 13px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #e6eaf0;
+    }
+
+    .btn-gold {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 11px 24px;
+        border: none;
+        border-radius: 9px;
+        background: #c9a227;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .btn-gold:hover {
+        background: #b38e1e;
+        color: white;
+    }
+
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 11px 24px;
+        border: none;
+        border-radius: 9px;
+        background: #eef1f5;
+        color: #0b1f3a;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #e1e6ed;
+        color: #0b1f3a;
+    }
+
+    @@media (max-width: 700px) {
+        .review-page {
+            margin-top: 25px;
+            padding: 0 16px;
+        }
+
+        .review-header h1 {
+            font-size: 28px;
+        }
+
+        .review-card {
+            padding: 24px 18px;
+        }
+
+        .rating-options {
+            gap: 8px;
+        }
+
+        .rating-option label {
+            width: 52px;
+            height: 48px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .form-actions a,
+        .form-actions button {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="review-page">
+
+    <div class="review-header">
+        <h1>Add Review</h1>
+        <p>Share feedback about your stay at Home Away From Home.</p>
     </div>
+
+    <div class="review-card">
+
+        <div asp-validation-summary="ModelOnly"
+             class="validation-summary"></div>
+
+        <form asp-action="Create" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label asp-for="BookingID"
+                       class="form-label">
+                    Booking
+                </label>
+
+                <select asp-for="BookingID"
+                        class="form-select"
+                        asp-items="@(new SelectList(
+                            ViewBag.Bookings,
+                            "BookingID",
+                            "BookingID",
+                            Model.BookingID))">
+
+                    <option value="">
+                        Select a booking
+                    </option>
+
+                </select>
+
+                <div class="field-help">
+                    Select the booking associated with your review.
+                </div>
+
+                <span asp-validation-for="BookingID"
+                      class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    Rating
+                </label>
+
+                <div class="rating-options">
+
+                    @for (var rating = 1; rating <= 5; rating++)
+                    {
+                        <div class="rating-option">
+
+                            <input type="radio"
+                                   id="rating-@rating"
+                                   name="Rating"
+                                   value="@rating"
+                                   @(Model.Rating == rating ? "checked" : "") />
+
+                            <label for="rating-@rating">
+                                @rating
+                            </label>
+
+                        </div>
+                    }
+
+                </div>
+
+                <div class="rating-help">
+                    1 = Very Poor &nbsp; • &nbsp; 5 = Excellent
+                </div>
+
+                <span asp-validation-for="Rating"
+                      class="field-validation"></span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label asp-for="Comment"
+                       class="form-label">
+                    Comment
+                </label>
+
+                <textarea asp-for="Comment"
+                          class="form-control"
+                          placeholder="Tell us about your experience..."></textarea>
+
+                <div class="field-help">
+                    Please provide constructive feedback about your stay.
+                </div>
+
+                <span asp-validation-for="Comment"
+                      class="field-validation"></span>
+
+            </div>
+
+            <div class="form-actions">
+
+                <a asp-action="Index"
+                   class="btn-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn-gold">
+                    Submit Review
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
