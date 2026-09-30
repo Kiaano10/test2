@@ -806,24 +806,21 @@
                     }
                     else
                     {
-
-                        <a asp-area="Identity"
-                           asp-page="/Account/Login"
+                        <a asp-controller="Account"
+                           asp-action="Login"
                            class="hafh-signin">
 
                             Sign In
 
                         </a>
 
-
-                        <a asp-area="Identity"
-                           asp-page="/Account/Register"
+                        <a asp-controller="Account"
+                           asp-action="Register"
                            class="hafh-register">
 
                             Register
 
                         </a>
-
                     }
 
                 </div>
@@ -933,16 +930,15 @@
                     else
                     {
 
-                        <a asp-area="Identity"
-                           asp-page="/Account/Login">
+                        <a asp-controller="Account"
+                           asp-action="Login">
 
                             Sign In
 
                         </a>
 
-
-                        <a asp-area="Identity"
-                           asp-page="/Account/Register">
+                        <a asp-controller="Account"
+                           asp-action="Register">
 
                             Register
 

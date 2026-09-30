@@ -1,14 +1,639 @@
 @model HomeAwayFromHome.DTOs.LoginApiRequest
-@{ ViewData["Title"] = "Login"; }
-<div class="container py-5" style="max-width:520px">
-    <h1>Login</h1>
-    <p class="text-muted">Sign in to Home Away From Home.</p>
-    @if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
-    <form asp-action="Login" method="post">
-        <div asp-validation-summary="All" class="text-danger mb-3"></div>
-        <div class="mb-3"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" type="email" /></div>
-        <div class="mb-3"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" type="password" /></div>
-        <button class="btn btn-primary" type="submit">Login</button>
-        <a asp-action="Register" class="btn btn-link">Create an account</a>
-    </form>
+
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+<div class="account-page">
+
+    <div class="account-container login-container">
+
+        <!-- LEFT BRANDING PANEL -->
+        <section class="account-brand-panel">
+
+            <div class="account-brand-content">
+
+                <img src="~/Image/Logo.jpeg"
+                     alt="Home Away From Home"
+                     class="account-logo" />
+
+                <span class="account-eyebrow">
+                    WELCOME BACK
+                </span>
+
+                <h1>
+                    HOME AWAY
+                    <span>FROM HOME</span>
+                </h1>
+
+                <p>
+                    Sign in to access your account, manage your
+                    bookings and continue your journey with us.
+                </p>
+
+
+                <div class="account-benefits">
+
+                    <div class="account-benefit">
+
+                        <span class="benefit-icon">
+                            ✓
+                        </span>
+
+                        <div>
+                            <strong>Manage your bookings</strong>
+
+                            <small>
+                                View and manage your upcoming stays.
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="account-benefit">
+
+                        <span class="benefit-icon">
+                            ✓
+                        </span>
+
+                        <div>
+                            <strong>Access your account</strong>
+
+                            <small>
+                                Keep your details and activity organised.
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="account-benefit">
+
+                        <span class="benefit-icon">
+                            ✓
+                        </span>
+
+                        <div>
+                            <strong>Find your next stay</strong>
+
+                            <small>
+                                Explore comfortable properties with ease.
+                            </small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT LOGIN PANEL -->
+        <section class="account-form-panel">
+
+            <div class="account-form-content">
+
+                <div class="account-heading">
+
+                    <span>
+                        SIGN IN
+                    </span>
+
+                    <h2>
+                        Welcome back
+                    </h2>
+
+                    <p>
+                        Sign in to your Home Away From Home account.
+                    </p>
+
+                </div>
+
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="account-success">
+                        @TempData["Success"]
+                    </div>
+                }
+
+
+                <form asp-controller="Account"
+                      asp-action="Login"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="All"
+                         class="account-validation"
+                         role="alert">
+                    </div>
+
+
+                    <!-- EMAIL -->
+                    <div class="account-form-group">
+
+                        <label asp-for="Email">
+                            Email address
+                        </label>
+
+                        <div class="account-input-wrapper">
+
+                            <span class="account-input-icon">
+                                ✉
+                            </span>
+
+                            <input asp-for="Email"
+                                   class="account-input account-input-with-icon"
+                                   type="email"
+                                   placeholder="Enter your email address"
+                                   autocomplete="email" />
+
+                        </div>
+
+                        <span asp-validation-for="Email"
+                              class="account-field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+                    <div class="account-form-group">
+
+                        <label asp-for="Password">
+                            Password
+                        </label>
+
+                        <div class="account-input-wrapper">
+
+                            <span class="account-input-icon">
+                                •
+                            </span>
+
+                            <input asp-for="Password"
+                                   class="account-input account-input-with-icon"
+                                   type="password"
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password" />
+
+                        </div>
+
+                        <span asp-validation-for="Password"
+                              class="account-field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- LOGIN BUTTON -->
+                    <button type="submit"
+                            class="account-submit-button">
+
+                        Sign In
+
+                    </button>
+
+
+                    <!-- REGISTER -->
+                    <div class="account-switch">
+
+                        <span>
+                            Don't have an account?
+                        </span>
+
+                        <a asp-controller="Account"
+                           asp-action="Register">
+
+                            Create an account
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </div>
+
 </div>
+
+
+<style>
+
+    /* ==========================================================
+           ACCOUNT PAGES
+           ========================================================== */
+
+    .account-page {
+        min-height: calc(100vh - 76px);
+        padding: 65px 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f6f2;
+    }
+
+
+    .account-container {
+        width: min(1050px, 100%);
+        display: grid;
+        grid-template-columns: .9fr 1.1fr;
+        overflow: hidden;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 20px 55px rgba(23, 32, 51, .12);
+    }
+
+
+    /* ==========================================================
+           BRAND PANEL
+           ========================================================== */
+
+    .account-brand-panel {
+        padding: 55px 50px;
+        display: flex;
+        align-items: center;
+        color: #fff;
+        background: linear-gradient( 145deg, #172033 0%, #202e47 100% );
+    }
+
+
+    .account-brand-content {
+        max-width: 390px;
+    }
+
+
+    .account-logo {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+        margin-bottom: 27px;
+        border-radius: 12px;
+        background: #fff;
+        border: 2px solid #e9b44c;
+    }
+
+
+    .account-eyebrow {
+        display: block;
+        margin-bottom: 10px;
+        color: #e9b44c;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: .18em;
+    }
+
+
+    .account-brand-panel h1 {
+        margin: 0;
+        color: #fff;
+        font-size: 2.25rem;
+        font-weight: 850;
+        line-height: 1.08;
+        letter-spacing: .02em;
+    }
+
+
+        .account-brand-panel h1 span {
+            display: block;
+            margin-top: 8px;
+            color: #e9b44c;
+            font-size: 1rem;
+            letter-spacing: .3em;
+        }
+
+
+    .account-brand-panel p {
+        max-width: 360px;
+        margin: 24px 0 0;
+        color: rgba(255,255,255,.68);
+        font-size: .88rem;
+        line-height: 1.75;
+    }
+
+
+    /* ==========================================================
+           BENEFITS
+           ========================================================== */
+
+    .account-benefits {
+        margin-top: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+
+    .account-benefit {
+        display: flex;
+        gap: 13px;
+        align-items: flex-start;
+    }
+
+
+    .benefit-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 29px;
+        height: 29px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        color: #172033;
+        background: #e9b44c;
+        font-size: .72rem;
+        font-weight: 900;
+    }
+
+
+    .account-benefit strong {
+        display: block;
+        color: #fff;
+        font-size: .8rem;
+        font-weight: 750;
+    }
+
+
+    .account-benefit small {
+        display: block;
+        margin-top: 3px;
+        color: rgba(255,255,255,.48);
+        font-size: .72rem;
+        line-height: 1.45;
+    }
+
+
+    /* ==========================================================
+           FORM PANEL
+           ========================================================== */
+
+    .account-form-panel {
+        padding: 55px 65px;
+        display: flex;
+        align-items: center;
+        background: #fff;
+    }
+
+
+    .account-form-content {
+        width: 100%;
+        max-width: 510px;
+        margin: 0 auto;
+    }
+
+
+    .account-heading {
+        margin-bottom: 30px;
+    }
+
+
+        .account-heading > span {
+            display: block;
+            margin-bottom: 8px;
+            color: #b98422;
+            font-size: .67rem;
+            font-weight: 850;
+            letter-spacing: .17em;
+        }
+
+
+        .account-heading h2 {
+            margin: 0;
+            color: #172033 !important;
+            font-size: 1.85rem;
+            font-weight: 850;
+            line-height: 1.2;
+        }
+
+
+        .account-heading p {
+            margin: 9px 0 0;
+            color: #7a808b !important;
+            font-size: .84rem;
+        }
+
+
+    /* ==========================================================
+           SUCCESS MESSAGE
+           ========================================================== */
+
+    .account-success {
+        margin-bottom: 18px;
+        padding: 11px 13px;
+        border: 1px solid #c8dfd0;
+        border-radius: 7px;
+        color: #2f6847;
+        background: #f1faf4;
+        font-size: .76rem;
+    }
+
+
+    /* ==========================================================
+           FORM
+           ========================================================== */
+
+    .account-form-group {
+        margin-bottom: 20px;
+    }
+
+
+        .account-form-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: #303746 !important;
+            font-size: .76rem;
+            font-weight: 750;
+        }
+
+
+    .account-input-wrapper {
+        position: relative;
+    }
+
+
+    .account-input-icon {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        color: #a0a5ae;
+        font-size: .82rem;
+        pointer-events: none;
+    }
+
+
+    .account-input {
+        width: 100%;
+        height: 50px;
+        box-sizing: border-box;
+        padding: 0 14px;
+        border: 1px solid #ddd9d2;
+        border-radius: 8px;
+        outline: none;
+        color: #172033 !important;
+        background: #fff;
+        font-family: inherit;
+        font-size: .8rem;
+        transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+
+    .account-input-with-icon {
+        padding-left: 42px;
+    }
+
+
+    .account-input::placeholder {
+        color: #a1a5ad !important;
+        opacity: 1;
+    }
+
+
+    .account-input:focus {
+        border-color: #d4a33f;
+        box-shadow: 0 0 0 3px rgba(233,180,76,.14);
+    }
+
+
+    /* ==========================================================
+           VALIDATION
+           ========================================================== */
+
+    .account-validation {
+        margin-bottom: 18px;
+        padding: 11px 13px;
+        border: 1px solid #f0c9c9;
+        border-radius: 7px;
+        color: #a53d3d;
+        background: #fff5f5;
+        font-size: .76rem;
+    }
+
+
+    .account-field-error {
+        display: block;
+        margin-top: 5px;
+        color: #b74343;
+        font-size: .68rem;
+    }
+
+
+    /* ==========================================================
+           BUTTON
+           ========================================================== */
+
+    .account-submit-button {
+        width: 100%;
+        height: 50px;
+        margin-top: 5px;
+        border: 0;
+        border-radius: 8px;
+        color: #172033;
+        background: #e9b44c;
+        font-family: inherit;
+        font-size: .8rem;
+        font-weight: 850;
+        cursor: pointer;
+        transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+
+
+        .account-submit-button:hover {
+            background: #f3c969;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(233,180,76,.22);
+        }
+
+
+    /* ==========================================================
+           REGISTER LINK
+           ========================================================== */
+
+    .account-switch {
+        margin-top: 21px;
+        color: #858b95;
+        font-size: .75rem;
+        text-align: center;
+    }
+
+
+        .account-switch a {
+            margin-left: 5px;
+            color: #a87518 !important;
+            font-weight: 800;
+            text-decoration: none !important;
+        }
+
+
+            .account-switch a:hover {
+                color: #7f5812 !important;
+                text-decoration: underline !important;
+            }
+
+
+    /* ==========================================================
+           RESPONSIVE
+           ========================================================== */
+
+    @@media (max-width: 850px) {
+
+        .account-container {
+            grid-template-columns: 1fr;
+        }
+
+
+        .account-brand-panel {
+            padding: 42px 40px;
+        }
+
+
+        .account-brand-content {
+            max-width: 600px;
+        }
+
+
+        .account-form-panel {
+            padding: 45px 40px;
+        }
+    }
+
+
+    @@media (max-width: 550px) {
+
+        .account-page {
+            padding: 30px 15px;
+        }
+
+
+        .account-brand-panel {
+            padding: 35px 25px;
+        }
+
+
+            .account-brand-panel h1 {
+                font-size: 1.8rem;
+            }
+
+
+        .account-form-panel {
+            padding: 35px 25px;
+        }
+
+
+        .account-heading h2 {
+            font-size: 1.55rem;
+        }
+    }
+
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
