@@ -1,73 +1,334 @@
 @model HomeAwayFromHome.Models.FinancialTransaction
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Transaction Details";
 }
 
-<h1>Details</h1>
+<style>
+    .transaction-page {
+        max-width: 1000px;
+        margin: 40px auto 80px;
+        padding: 0 24px;
+    }
 
-<div>
-    <h4>FinancialTransaction</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PropertyID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PropertyID)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Property)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Property)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BookingID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BookingID)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Booking)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Booking)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TransactionType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TransactionType)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Amount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Amount)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TransactionDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TransactionDate)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.FinancialTransactionID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    .transaction-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 30px;
+    }
+
+    .transaction-header h1 {
+        margin: 0 0 8px;
+        color: #0b1f3a;
+        font-size: 34px;
+        font-weight: 700;
+    }
+
+    .transaction-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 16px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-gold {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 20px;
+        border-radius: 8px;
+        background: #c9a227;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        border: none;
+        transition: 0.2s ease;
+    }
+
+    .btn-gold:hover {
+        background: #b38e1e;
+        color: white;
+    }
+
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 20px;
+        border-radius: 8px;
+        background: #eef1f5;
+        color: #0b1f3a;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #e1e6ed;
+        color: #0b1f3a;
+    }
+
+    .transaction-card {
+        background: white;
+        border: 1px solid #e2e7ee;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(11, 31, 58, 0.06);
+    }
+
+    .card-top {
+        background: #0b1f3a;
+        color: white;
+        padding: 28px 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .card-top-label {
+        margin: 0 0 6px;
+        color: #d9dee7;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .card-top h2 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .amount {
+        font-size: 30px;
+        font-weight: 700;
+        color: #c9a227;
+        white-space: nowrap;
+    }
+
+    .transaction-content {
+        padding: 32px;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 26px 40px;
+    }
+
+    .detail-item {
+        border-bottom: 1px solid #edf0f4;
+        padding-bottom: 18px;
+    }
+
+    .detail-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #7a8494;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .detail-value {
+        color: #0b1f3a;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .description-section {
+        margin-top: 30px;
+        padding-top: 26px;
+        border-top: 1px solid #edf0f4;
+    }
+
+    .description-section h3 {
+        margin: 0 0 12px;
+        color: #0b1f3a;
+        font-size: 18px;
+    }
+
+    .description {
+        margin: 0;
+        color: #4b5563;
+        line-height: 1.7;
+        white-space: pre-wrap;
+    }
+
+    .transaction-footer {
+        margin-top: 28px;
+        padding-top: 24px;
+        border-top: 1px solid #edf0f4;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    @@media (max-width: 700px) {
+        .transaction-page {
+            padding: 0 16px;
+            margin-top: 25px;
+        }
+
+        .transaction-header {
+            flex-direction: column;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .header-actions a {
+            flex: 1;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .card-top {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .amount {
+            font-size: 26px;
+        }
+
+        .transaction-content {
+            padding: 24px;
+        }
+
+        .transaction-footer {
+            flex-direction: column;
+        }
+
+        .transaction-footer a {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="transaction-page">
+
+    <div class="transaction-header">
+        <div>
+            <h1>Transaction Details</h1>
+            <p>View the full details of this financial transaction.</p>
+        </div>
+
+        <div class="header-actions">
+            <a asp-action="Index" class="btn-secondary">
+                Back to Transactions
+            </a>
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.FinancialTransactionID"
+               class="btn-gold">
+                Edit Transaction
+            </a>
+        </div>
+    </div>
+
+    <div class="transaction-card">
+
+        <div class="card-top">
+            <div>
+                <p class="card-top-label">Transaction</p>
+                <h2>
+                    @Model.TransactionType
+                </h2>
+            </div>
+
+            <div class="amount">
+                R @Model.Amount.ToString("N2")
+            </div>
+        </div>
+
+        <div class="transaction-content">
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+                    <span class="detail-label">Transaction ID</span>
+                    <span class="detail-value">
+                        #@Model.FinancialTransactionID
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Property</span>
+                    <span class="detail-value">
+                        @(Model.Property?.PropertyName ?? "Not specified")
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Booking</span>
+                    <span class="detail-value">
+                        @(Model.BookingID.HasValue
+                            ? $"Booking #{Model.BookingID}"
+                            : "No booking associated")
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Transaction Date</span>
+                    <span class="detail-value">
+                        @Model.TransactionDate.ToString("dd MMMM yyyy")
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Transaction Type</span>
+                    <span class="detail-value">
+                        @Model.TransactionType
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Amount</span>
+                    <span class="detail-value">
+                        R @Model.Amount.ToString("N2")
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="description-section">
+                <h3>Description</h3>
+
+                <p class="description">
+                    @(string.IsNullOrWhiteSpace(Model.Description)
+                        ? "No description was provided."
+                        : Model.Description)
+                </p>
+            </div>
+
+            <div class="transaction-footer">
+                <a asp-action="Index"
+                   class="btn-secondary">
+                    Back to Transactions
+                </a>
+
+                <a asp-action="Edit"
+                   asp-route-id="@Model.FinancialTransactionID"
+                   class="btn-gold">
+                    Edit Transaction
+                </a>
+            </div>
+
+        </div>
+    </div>
+
 </div>

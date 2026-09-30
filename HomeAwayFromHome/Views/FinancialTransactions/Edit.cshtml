@@ -1,69 +1,403 @@
 @model HomeAwayFromHome.Models.FinancialTransaction
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Transaction";
 }
 
-<h1>Edit</h1>
+<style>
+    .transaction-page {
+        max-width: 1000px;
+        margin: 40px auto 80px;
+        padding: 0 24px;
+    }
 
-<h4>FinancialTransaction</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="FinancialTransactionID" />
-            <div class="form-group">
-                <label asp-for="PropertyID" class="control-label"></label>
-                <input asp-for="PropertyID" class="form-control" />
-                <span asp-validation-for="PropertyID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Property" class="control-label"></label>
-                <input asp-for="Property" class="form-control" />
-                <span asp-validation-for="Property" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BookingID" class="control-label"></label>
-                <input asp-for="BookingID" class="form-control" />
-                <span asp-validation-for="BookingID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Booking" class="control-label"></label>
-                <input asp-for="Booking" class="form-control" />
-                <span asp-validation-for="Booking" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TransactionType" class="control-label"></label>
-                <input asp-for="TransactionType" class="form-control" />
-                <span asp-validation-for="TransactionType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Amount" class="control-label"></label>
-                <input asp-for="Amount" class="form-control" />
-                <span asp-validation-for="Amount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TransactionDate" class="control-label"></label>
-                <input asp-for="TransactionDate" class="form-control" />
-                <span asp-validation-for="TransactionDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    .transaction-header {
+        margin-bottom: 30px;
+    }
+
+    .transaction-header h1 {
+        margin: 0 0 8px;
+        color: #0b1f3a;
+        font-size: 34px;
+        font-weight: 700;
+    }
+
+    .transaction-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 16px;
+    }
+
+    .transaction-card {
+        background: white;
+        border: 1px solid #e2e7ee;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(11, 31, 58, 0.06);
+        padding: 32px;
+    }
+
+    .validation-summary {
+        margin-bottom: 24px;
+        padding: 14px 18px;
+        border: 1px solid #f2b8b5;
+        border-radius: 10px;
+        background: #fff4f3;
+        color: #b42318;
+    }
+
+    .validation-summary:empty {
+        display: none;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 4px;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 9px;
+        color: #0b1f3a;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .optional-label {
+        margin-left: 6px;
+        color: #8a93a1;
+        font-size: 13px;
+        font-weight: 400;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        min-height: 54px;
+        padding: 13px 16px;
+        border: 1px solid #d7dee8;
+        border-radius: 10px;
+        background: #fff;
+        color: #0b1f3a;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    textarea.form-control {
+        min-height: 145px;
+        resize: vertical;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #c9a227;
+        box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
+    }
+
+    .input-prefix {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .currency-prefix {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 48px;
+        border: 1px solid #d7dee8;
+        border-right: none;
+        border-radius: 10px 0 0 10px;
+        background: #f7f8fb;
+        color: #6b7280;
+        font-size: 16px;
+    }
+
+    .amount-input {
+        border-radius: 0 10px 10px 0;
+    }
+
+    .field-help {
+        margin-top: 7px;
+        color: #8a93a1;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .field-validation {
+        display: block;
+        margin-top: 6px;
+        color: #b42318;
+        font-size: 13px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #e6eaf0;
+    }
+
+    .btn-gold {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 11px 24px;
+        border: none;
+        border-radius: 9px;
+        background: #c9a227;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .btn-gold:hover {
+        background: #b38e1e;
+        color: white;
+    }
+
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 11px 24px;
+        border: none;
+        border-radius: 9px;
+        background: #eef1f5;
+        color: #0b1f3a;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #e1e6ed;
+        color: #0b1f3a;
+    }
+
+    @@media (max-width: 700px) {
+        .transaction-page {
+            margin-top: 25px;
+            padding: 0 16px;
+        }
+
+        .transaction-header h1 {
+            font-size: 28px;
+        }
+
+        .transaction-card {
+            padding: 24px 18px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full-width {
+            grid-column: auto;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .form-actions a,
+        .form-actions button {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="transaction-page">
+
+    <div class="transaction-header">
+        <h1>Edit Transaction</h1>
+        <p>Update the details of this financial transaction.</p>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <div class="transaction-card">
+
+        <div asp-validation-summary="ModelOnly"
+             class="validation-summary"></div>
+
+        <form asp-action="Edit" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   asp-for="FinancialTransactionID" />
+
+            <div class="form-grid">
+
+                <!-- PROPERTY -->
+                <div class="form-group">
+                    <label asp-for="PropertyID"
+                           class="form-label">
+                        Property
+                    </label>
+
+                    <select asp-for="PropertyID"
+                            class="form-select"
+                            asp-items="@(new SelectList(
+                                ViewBag.Properties,
+                                "PropertyID",
+                                "PropertyName",
+                                Model.PropertyID))">
+                        <option value="">Select a property</option>
+                    </select>
+
+                    <div class="field-help">
+                        Select the property this transaction is associated with.
+                    </div>
+
+                    <span asp-validation-for="PropertyID"
+                          class="field-validation"></span>
+                </div>
+
+                <!-- BOOKING -->
+                <div class="form-group">
+                    <label asp-for="BookingID"
+                           class="form-label">
+                        Booking
+                        <span class="optional-label">Optional</span>
+                    </label>
+
+                    <select asp-for="BookingID"
+                            class="form-select"
+                            asp-items="@(new SelectList(
+                                ViewBag.Bookings,
+                                "BookingID",
+                                "BookingID",
+                                Model.BookingID))">
+                        <option value="">No booking associated</option>
+                    </select>
+
+                    <div class="field-help">
+                        Link this transaction to a specific booking if applicable.
+                    </div>
+
+                    <span asp-validation-for="BookingID"
+                          class="field-validation"></span>
+                </div>
+
+                <!-- TRANSACTION TYPE -->
+                <div class="form-group">
+                    <label asp-for="TransactionType"
+                           class="form-label">
+                        Transaction Type
+                    </label>
+
+                    <select asp-for="TransactionType"
+                            class="form-select">
+                        <option value="">Select transaction type</option>
+                        <option value="Income">Income</option>
+                        <option value="Expense">Expense</option>
+                    </select>
+
+                    <span asp-validation-for="TransactionType"
+                          class="field-validation"></span>
+                </div>
+
+                <!-- AMOUNT -->
+                <div class="form-group">
+                    <label asp-for="Amount"
+                           class="form-label">
+                        Amount
+                    </label>
+
+                    <div class="input-prefix">
+                        <span class="currency-prefix">R</span>
+
+                        <input asp-for="Amount"
+                               class="form-control amount-input"
+                               type="number"
+                               min="0.01"
+                               step="0.01" />
+                    </div>
+
+                    <div class="field-help">
+                        Enter the transaction amount in South African Rand.
+                    </div>
+
+                    <span asp-validation-for="Amount"
+                          class="field-validation"></span>
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="form-group full-width">
+                    <label asp-for="Description"
+                           class="form-label">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control"
+                              placeholder="Enter a description of the transaction..."></textarea>
+
+                    <div class="field-help">
+                        Provide a clear description of the financial transaction.
+                    </div>
+
+                    <span asp-validation-for="Description"
+                          class="field-validation"></span>
+                </div>
+
+                <!-- DATE -->
+                <div class="form-group full-width">
+                    <label asp-for="TransactionDate"
+                           class="form-label">
+                        Transaction Date
+                    </label>
+
+                    <input asp-for="TransactionDate"
+                           class="form-control"
+                           type="date" />
+
+                    <span asp-validation-for="TransactionDate"
+                          class="field-validation"></span>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+
+                <a asp-action="Index"
+                   class="btn-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn-gold">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
