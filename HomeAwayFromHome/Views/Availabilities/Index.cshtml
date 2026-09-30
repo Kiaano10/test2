@@ -4,146 +4,548 @@
     ViewData["Title"] = "Availability";
 }
 
-<div class="management-page">
+<div class="hafh-page">
 
-    <div class="management-header">
+    <div class="hafh-page-header">
 
         <div>
-            <span class="page-eyebrow">PROPERTY CALENDAR</span>
+            <span class="hafh-eyebrow">PROPERTY CALENDAR</span>
+
             <h1>Availability</h1>
-            <p>Manage when your properties are available for booking.</p>
+
+            <p>
+                View and manage property availability periods.
+            </p>
         </div>
 
-        <a asp-action="Create" class="btn-primary-custom">
-            <span>+</span> Add Availability
-        </a>
+        @if (User.IsInRole("Admin") || User.IsInRole("Owner"))
+        {
+            <a asp-action="Create"
+               class="hafh-btn hafh-btn-gold">
+                + Add Availability
+            </a>
+        }
 
     </div>
 
 
-    <div class="summary-row">
-
-        <div class="summary-card">
-            <span class="summary-label">TOTAL RECORDS</span>
-            <strong>@Model.Count()</strong>
+    @if (TempData["Success"] != null)
+    {
+        <div class="hafh-alert hafh-alert-success">
+            <span>✓</span>
+            @TempData["Success"]
         </div>
+    }
 
-        <div class="summary-card">
-            <span class="summary-label">AVAILABLE</span>
-            <strong>
-                @Model.Count(x => x.Status == "Available")
-            </strong>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="hafh-alert hafh-alert-error">
+            <span>!</span>
+            @TempData["Error"]
         </div>
+    }
 
-        <div class="summary-card">
-            <span class="summary-label">UNAVAILABLE</span>
-            <strong>
-                @Model.Count(x => x.Status != "Available")
-            </strong>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="hafh-availability-grid">
+
+            @foreach (var item in Model)
+            {
+                var isAvailable =
+                    item.Status?.Equals(
+                        "Available",
+                        StringComparison.OrdinalIgnoreCase
+                    ) == true;
+
+                <div class="hafh-availability-card">
+
+                    <div class="hafh-card-top">
+
+                        <div>
+                            <span class="hafh-card-label">
+                                PROPERTY
+                            </span>
+
+                            <h2>
+                                Home Away From Home
+                            </h2>
+
+                            <span class="hafh-property-id">
+                                Property #@item.PropertyID
+                            </span>
+                        </div>
+
+
+                        @if (isAvailable)
+                        {
+                            <span class="hafh-status hafh-status-available">
+                                Available
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="hafh-status hafh-status-unavailable">
+                                @item.Status
+                            </span>
+                        }
+
+                    </div>
+
+
+                    <div class="hafh-date-row">
+
+                        <div class="hafh-date-box">
+
+                            <span>
+                                AVAILABLE FROM
+                            </span>
+
+                            <strong>
+                                @item.AvailableFrom.ToString("dd MMM yyyy")
+                            </strong>
+
+                        </div>
+
+
+                        <div class="hafh-date-arrow">
+                            →
+                        </div>
+
+
+                        <div class="hafh-date-box">
+
+                            <span>
+                                AVAILABLE TO
+                            </span>
+
+                            <strong>
+                                @item.AvailableTo.ToString("dd MMM yyyy")
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="hafh-card-footer">
+
+                        <a asp-action="Details"
+                           asp-route-id="@item.AvailabilityID"
+                           asp-route-propertyId="@item.PropertyID"
+                           class="hafh-action hafh-action-view">
+                            View
+                        </a>
+
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("Owner"))
+                        {
+                            <a asp-action="Edit"
+                               asp-route-id="@item.AvailabilityID"
+                               asp-route-propertyId="@item.PropertyID"
+                               class="hafh-action hafh-action-edit">
+                                Edit
+                            </a>
+
+
+                            <a asp-action="Delete"
+                               asp-route-id="@item.AvailabilityID"
+                               asp-route-propertyId="@item.PropertyID"
+                               class="hafh-action hafh-action-delete">
+                                Delete
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+            }
+
         </div>
+    }
+    else
+    {
+        <div class="hafh-empty-state">
 
-    </div>
-
-
-    <div class="data-card">
-
-        <div class="data-card-header">
-
-            <div>
-                <h2>Availability Schedule</h2>
-                <p>Current availability records for your properties.</p>
+            <div class="hafh-empty-icon">
+                ◷
             </div>
 
-        </div>
+            <h2>No Availability Records</h2>
 
-        <div class="table-responsive">
+            <p>
+                There are currently no availability periods recorded
+                for the property.
+            </p>
 
-            <table class="modern-table">
-
-                <thead>
-
-                    <tr>
-                        <th>Property</th>
-                        <th>Available From</th>
-                        <th>Available To</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-
-                            <td>
-                                <strong>
-                                    @item.Property?.PropertyName
-                                </strong>
-
-                                <small>
-                                    Property #@item.PropertyID
-                                </small>
-                            </td>
-
-                            <td>
-                                @item.AvailableFrom.ToString("dd MMM yyyy")
-                            </td>
-
-                            <td>
-                                @item.AvailableTo.ToString("dd MMM yyyy")
-                            </td>
-
-                            <td>
-
-                                @{
-                                    var statusClass =
-                                        item.Status?.ToLower() == "available"
-                                        ? "status-confirmed"
-                                        : "status-cancelled";
-                                }
-
-                                <span class="status-badge @statusClass">
-                                    @item.Status
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                <div class="table-actions">
-
-                                    <a asp-action="Edit"
-                                       asp-route-id="@item.AvailabilityID">
-                                        Edit
-                                    </a>
-
-                                    <a asp-action="Details"
-                                       asp-route-id="@item.AvailabilityID">
-                                        View
-                                    </a>
-
-                                    <a asp-action="Delete"
-                                       asp-route-id="@item.AvailabilityID"
-                                       class="danger-link">
-                                        Delete
-                                    </a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-                    }
-
-                </tbody>
-
-            </table>
+            @if (User.IsInRole("Admin") || User.IsInRole("Owner"))
+            {
+                <a asp-action="Create"
+                   class="hafh-btn hafh-btn-gold">
+                    + Add Availability
+                </a>
+            }
 
         </div>
-
-    </div>
+    }
 
 </div>
+
+
+<style>
+
+    .hafh-page {
+        min-height: calc(100vh - 160px);
+        padding: 50px 24px;
+        background: #f7f8fb;
+    }
+
+    .hafh-page-header {
+        max-width: 1100px;
+        margin: 0 auto 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 25px;
+    }
+
+    .hafh-eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: #c9a227;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+
+    .hafh-page-header h1 {
+        margin: 0 0 8px;
+        color: #0b1f3a;
+        font-size: 2.3rem;
+        font-weight: 700;
+    }
+
+    .hafh-page-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: .95rem;
+    }
+
+
+    /* BUTTONS */
+
+    .hafh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        font-size: .9rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .hafh-btn-gold {
+        background: #c9a227;
+        color: #ffffff;
+    }
+
+    .hafh-btn-gold:hover {
+        background: #ad8b1e;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+
+    /* ALERTS */
+
+    .hafh-alert {
+        max-width: 1100px;
+        margin: 0 auto 25px;
+        padding: 14px 18px;
+        border-radius: 10px;
+        font-size: .9rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hafh-alert-success {
+        background: #e9f7ef;
+        border: 1px solid #b9e3c9;
+        color: #197044;
+    }
+
+    .hafh-alert-error {
+        background: #fff0ef;
+        border: 1px solid #f3b4ae;
+        color: #b42318;
+    }
+
+
+    /* AVAILABILITY GRID */
+
+    .hafh-availability-grid {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+
+    /* CARD */
+
+    .hafh-availability-card {
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(11, 31, 58, .06);
+        transition: transform .2s ease,
+                    box-shadow .2s ease;
+    }
+
+    .hafh-availability-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(11, 31, 58, .1);
+    }
+
+
+    /* CARD TOP */
+
+    .hafh-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .hafh-card-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #c9a227;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: 1.3px;
+    }
+
+    .hafh-card-top h2 {
+        margin: 0 0 4px;
+        color: #0b1f3a;
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
+
+    .hafh-property-id {
+        color: #7a8290;
+        font-size: .78rem;
+    }
+
+
+    /* STATUS */
+
+    .hafh-status {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: .75rem;
+        font-weight: 700;
+    }
+
+    .hafh-status-available {
+        background: #e9f7ef;
+        color: #197044;
+    }
+
+    .hafh-status-unavailable {
+        background: #fff0ef;
+        color: #b42318;
+    }
+
+
+    /* DATES */
+
+    .hafh-date-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 18px;
+        margin-bottom: 22px;
+        background: #f8f9fb;
+        border: 1px solid #edf0f4;
+        border-radius: 11px;
+    }
+
+    .hafh-date-box {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .hafh-date-box span {
+        display: block;
+        margin-bottom: 6px;
+        color: #7a8290;
+        font-size: .67rem;
+        font-weight: 700;
+        letter-spacing: .7px;
+    }
+
+    .hafh-date-box strong {
+        color: #0b1f3a;
+        font-size: .92rem;
+    }
+
+    .hafh-date-arrow {
+        color: #c9a227;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+
+    /* CARD ACTIONS */
+
+    .hafh-card-footer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-top: 18px;
+        border-top: 1px solid #e8ebf0;
+    }
+
+    .hafh-action {
+        padding: 8px 13px;
+        border-radius: 7px;
+        font-size: .8rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .hafh-action-view {
+        background: #eef2f7;
+        color: #0b1f3a;
+    }
+
+    .hafh-action-view:hover {
+        background: #e1e6ed;
+        color: #0b1f3a;
+    }
+
+    .hafh-action-edit {
+        background: #fff8df;
+        color: #8c7015;
+    }
+
+    .hafh-action-edit:hover {
+        background: #f9edc2;
+        color: #705a0e;
+    }
+
+    .hafh-action-delete {
+        margin-left: auto;
+        background: #fff0ef;
+        color: #b42318;
+    }
+
+    .hafh-action-delete:hover {
+        background: #fbdedb;
+        color: #941b12;
+    }
+
+
+    /* EMPTY STATE */
+
+    .hafh-empty-state {
+        max-width: 700px;
+        margin: 50px auto;
+        padding: 55px 30px;
+        text-align: center;
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(11, 31, 58, .06);
+    }
+
+    .hafh-empty-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #fff8df;
+        color: #c9a227;
+        font-size: 1.7rem;
+    }
+
+    .hafh-empty-state h2 {
+        margin: 0 0 10px;
+        color: #0b1f3a;
+        font-size: 1.4rem;
+    }
+
+    .hafh-empty-state p {
+        margin: 0 auto 25px;
+        max-width: 500px;
+        color: #6b7280;
+        line-height: 1.6;
+    }
+
+
+    @@media (max-width: 800px) {
+
+        .hafh-availability-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+
+    @@media (max-width: 650px) {
+
+        .hafh-page {
+            padding: 30px 15px;
+        }
+
+        .hafh-page-header {
+            flex-direction: column;
+        }
+
+        .hafh-page-header .hafh-btn {
+            width: 100%;
+        }
+
+        .hafh-card-top {
+            flex-direction: column;
+        }
+
+        .hafh-date-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .hafh-date-arrow {
+            transform: rotate(90deg);
+        }
+
+        .hafh-card-footer {
+            flex-wrap: wrap;
+        }
+
+        .hafh-action-delete {
+            margin-left: 0;
+        }
+
+    }
+
+</style>

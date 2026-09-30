@@ -1,58 +1,402 @@
-@model HomeAwayFromHome.Models.Amenity
+@model HomeAwayFromHome.Models.Availability
 
 @{
-    ViewData["Title"] = "Edit Amenity";
+    ViewData["Title"] = "Edit Availability";
 }
 
 <div class="hafh-page">
+
     <div class="hafh-form-container">
 
         <div class="hafh-form-header">
+
             <div>
-                <span class="hafh-eyebrow">AMENITIES</span>
-                <h1>Edit Amenity</h1>
-                <p>Update the amenity information.</p>
+                <span class="hafh-eyebrow">PROPERTY CALENDAR</span>
+
+                <h1>Edit Availability</h1>
+
+                <p>
+                    Update the availability period and status.
+                </p>
             </div>
 
-            <a asp-action="Index" class="hafh-btn hafh-btn-outline">
+            <a asp-action="Index"
+               asp-route-propertyId="@Model.PropertyID"
+               class="hafh-btn hafh-btn-outline">
                 ← Back
             </a>
+
         </div>
 
-        <form asp-action="Edit">
 
-            <input type="hidden" asp-for="AmenityID" />
+        <form asp-action="Edit"
+              asp-route-id="@Model.AvailabilityID"
+              method="post">
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   asp-for="AvailabilityID" />
+
+            <input type="hidden"
+                   asp-for="PropertyID" />
+
+
+            <div asp-validation-summary="ModelOnly"
+                 class="hafh-validation-summary"></div>
+
+
+            <!-- PROPERTY -->
 
             <div class="hafh-form-group">
-                <label asp-for="Name"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+
+                <label>
+                    Property
+                </label>
+
+                <div class="hafh-readonly-field">
+                    Home Away From Home
+                    <span>
+                        Property #@Model.PropertyID
+                    </span>
+                </div>
+
+                <small class="form-help">
+                    The property cannot be changed when editing an availability record.
+                </small>
+
             </div>
 
-            <div class="hafh-form-group">
-                <label asp-for="Description"></label>
-                <textarea asp-for="Description" class="form-control"
-                          rows="5"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+
+            <!-- DATES -->
+
+            <div class="hafh-form-row">
+
+                <div class="hafh-form-group">
+
+                    <label asp-for="AvailableFrom">
+                        Available From
+                    </label>
+
+                    <input asp-for="AvailableFrom"
+                           type="date"
+                           class="form-control" />
+
+                    <span asp-validation-for="AvailableFrom"
+                          class="text-danger"></span>
+
+                </div>
+
+
+                <div class="hafh-form-group">
+
+                    <label asp-for="AvailableTo">
+                        Available To
+                    </label>
+
+                    <input asp-for="AvailableTo"
+                           type="date"
+                           class="form-control" />
+
+                    <span asp-validation-for="AvailableTo"
+                          class="text-danger"></span>
+
+                </div>
+
             </div>
+
+
+            <!-- STATUS -->
+
+            <div class="hafh-form-group">
+
+                <label asp-for="Status">
+                    Availability Status
+                </label>
+
+                <select asp-for="Status"
+                        class="form-control">
+
+                    <option value="Available">
+                        Available
+                    </option>
+
+                    <option value="Unavailable">
+                        Unavailable
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="Status"
+                      class="text-danger"></span>
+
+                <small class="form-help">
+                    Set whether the property can currently be booked during this period.
+                </small>
+
+            </div>
+
+
+            <!-- ACTIONS -->
 
             <div class="hafh-form-actions">
-                <a asp-action="Index" class="hafh-btn hafh-btn-secondary">
+
+                <a asp-action="Index"
+                   asp-route-propertyId="@Model.PropertyID"
+                   class="hafh-btn hafh-btn-secondary">
                     Cancel
                 </a>
 
-                <button type="submit" class="hafh-btn hafh-btn-gold">
+                <button type="submit"
+                        class="hafh-btn hafh-btn-gold">
                     Save Changes
                 </button>
+
             </div>
 
         </form>
 
     </div>
+
 </div>
 
+
+<style>
+
+    .hafh-page {
+        min-height: calc(100vh - 160px);
+        padding: 50px 24px;
+        background: #f7f8fb;
+    }
+
+    .hafh-form-container {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 40px;
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(11, 31, 58, .08);
+    }
+
+    .hafh-form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 25px;
+        margin-bottom: 35px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #e8ebf0;
+    }
+
+    .hafh-eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: #c9a227;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+
+    .hafh-form-header h1 {
+        margin: 0 0 8px;
+        color: #0b1f3a;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .hafh-form-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: .95rem;
+    }
+
+    .hafh-form-group {
+        margin-bottom: 25px;
+    }
+
+        .hafh-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #0b1f3a;
+            font-size: .9rem;
+            font-weight: 600;
+        }
+
+    .form-control {
+        width: 100%;
+        min-height: 48px;
+        padding: 12px 14px;
+        box-sizing: border-box;
+        border: 1px solid #d9dee7;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #0b1f3a;
+        font-size: .95rem;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #c9a227;
+            box-shadow: 0 0 0 3px rgba(201, 162, 39, .12);
+        }
+
+    .hafh-readonly-field {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 48px;
+        padding: 12px 14px;
+        box-sizing: border-box;
+        border: 1px solid #e0e4ea;
+        border-radius: 9px;
+        background: #f5f6f8;
+        color: #0b1f3a;
+        font-size: .95rem;
+    }
+
+        .hafh-readonly-field span {
+            color: #7a8290;
+            font-size: .8rem;
+        }
+
+    .form-help {
+        display: block;
+        margin-top: 7px;
+        color: #7a8290;
+        font-size: .8rem;
+    }
+
+    .hafh-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .hafh-validation-summary {
+        margin-bottom: 25px;
+        padding: 14px 18px;
+        border: 1px solid #f3b4ae;
+        border-radius: 10px;
+        background: #fff1f0;
+        color: #b42318;
+        font-size: .9rem;
+    }
+
+        .hafh-validation-summary:empty {
+            display: none;
+        }
+
+        .hafh-validation-summary ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+    .text-danger {
+        display: block;
+        margin-top: 6px;
+        color: #b42318 !important;
+        font-size: .82rem;
+    }
+
+    .hafh-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #e8ebf0;
+    }
+
+    .hafh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        font-size: .9rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .hafh-btn-gold {
+        background: #c9a227;
+        color: #ffffff;
+    }
+
+        .hafh-btn-gold:hover {
+            background: #ad8b1e;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    .hafh-btn-outline {
+        background: #ffffff;
+        color: #0b1f3a;
+        border: 1px solid #d9dee7;
+    }
+
+        .hafh-btn-outline:hover {
+            background: #f7f8fb;
+            color: #0b1f3a;
+            border-color: #0b1f3a;
+        }
+
+    .hafh-btn-secondary {
+        background: #eef1f5;
+        color: #0b1f3a;
+    }
+
+        .hafh-btn-secondary:hover {
+            background: #e2e6ec;
+            color: #0b1f3a;
+        }
+
+
+    @@media (max-width: 650px) {
+
+        .hafh-page {
+            padding: 30px 15px;
+        }
+
+        .hafh-form-container {
+            padding: 25px 20px;
+        }
+
+        .hafh-form-header {
+            flex-direction: column;
+        }
+
+        .hafh-form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .hafh-form-actions {
+            flex-direction: column-reverse;
+        }
+
+            .hafh-form-actions .hafh-btn {
+                width: 100%;
+            }
+
+        .hafh-readonly-field {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 5px;
+        }
+    }
+
+</style>
+
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

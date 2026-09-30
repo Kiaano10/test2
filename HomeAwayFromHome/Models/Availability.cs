@@ -9,7 +9,7 @@ namespace HomeAwayFromHome.Models
 
         public int PropertyID { get; set; }
 
-        public Property Property { get; set; } = null!;
+        public Property? Property { get; set; }
 
         [Required]
         public DateTime AvailableFrom { get; set; }

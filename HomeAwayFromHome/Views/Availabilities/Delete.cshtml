@@ -1,38 +1,99 @@
-@model HomeAwayFromHome.Models.Amenity
+@model HomeAwayFromHome.Models.Availability
 
 @{
-    ViewData["Title"] = "Delete Amenity";
+    ViewData["Title"] = "Delete Availability";
 }
 
 <div class="hafh-page">
 
     <div class="hafh-delete-container">
 
-        <div class="hafh-delete-icon">!</div>
+        <div class="hafh-delete-icon">
+            !
+        </div>
 
-        <span class="hafh-eyebrow">DELETE AMENITY</span>
+        <span class="hafh-eyebrow">
+            DELETE AVAILABILITY
+        </span>
 
-        <h1>Delete Amenity?</h1>
+        <h1>Delete Availability?</h1>
 
-        <p>
-            Are you sure you want to delete
-            <strong>@Model.Name</strong>?
+        <p class="hafh-delete-intro">
+            Are you sure you want to delete this availability period?
+            This action cannot be undone.
         </p>
 
-        <form asp-action="Delete">
 
-            <input type="hidden" asp-for="AmenityID" />
+        <div class="hafh-delete-details">
+
+            <div>
+                <span>Property</span>
+                <strong>
+                    Home Away From Home
+                </strong>
+                <small>
+                    Property #@Model.PropertyID
+                </small>
+            </div>
+
+
+            <div>
+                <span>Availability Period</span>
+
+                <strong>
+                    @Model.AvailableFrom.ToString("dd MMM yyyy")
+                    →
+                    @Model.AvailableTo.ToString("dd MMM yyyy")
+                </strong>
+            </div>
+
+
+            <div>
+                <span>Status</span>
+
+                @{
+                    var statusClass =
+                        Model.Status?.ToLower() == "available"
+                            ? "hafh-status-available"
+                            : "hafh-status-unavailable";
+                }
+
+                <strong>
+                    <span class="hafh-status @statusClass">
+                        @Model.Status
+                    </span>
+                </strong>
+            </div>
+
+        </div>
+
+
+        <form asp-action="Delete"
+              asp-route-id="@Model.AvailabilityID"
+              asp-route-propertyId="@Model.PropertyID"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   asp-for="AvailabilityID" />
+
+            <input type="hidden"
+                   asp-for="PropertyID" />
+
 
             <div class="hafh-form-actions centered">
 
                 <a asp-action="Index"
+                   asp-route-propertyId="@Model.PropertyID"
                    class="hafh-btn hafh-btn-secondary">
                     Cancel
                 </a>
 
                 <button type="submit"
-                        class="hafh-btn hafh-btn-danger">
-                    Delete Amenity
+                        class="hafh-btn hafh-btn-danger"
+                        onclick="return confirm('Are you sure you want to delete this availability period?');">
+                    Delete Availability
                 </button>
 
             </div>
@@ -42,3 +103,192 @@
     </div>
 
 </div>
+
+
+<style>
+
+    .hafh-page {
+        min-height: calc(100vh - 160px);
+        padding: 50px 24px;
+        background: #f7f8fb;
+    }
+
+    .hafh-delete-container {
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 45px;
+        text-align: center;
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(11, 31, 58, .08);
+    }
+
+    .hafh-delete-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 22px;
+        border-radius: 50%;
+        background: #fff0ef;
+        color: #b42318;
+        font-size: 1.6rem;
+        font-weight: 800;
+    }
+
+    .hafh-eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: #c9a227;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+
+    .hafh-delete-container h1 {
+        margin: 0 0 12px;
+        color: #0b1f3a;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .hafh-delete-intro {
+        max-width: 520px;
+        margin: 0 auto 30px;
+        color: #6b7280;
+        line-height: 1.6;
+    }
+
+    .hafh-delete-details {
+        margin-bottom: 30px;
+        padding: 20px;
+        text-align: left;
+        background: #f8f9fb;
+        border: 1px solid #e8ebf0;
+        border-radius: 12px;
+    }
+
+        .hafh-delete-details > div {
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e8ed;
+        }
+
+            .hafh-delete-details > div:first-child {
+                padding-top: 0;
+            }
+
+            .hafh-delete-details > div:last-child {
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+
+        .hafh-delete-details span:not(.hafh-status) {
+            display: block;
+            margin-bottom: 5px;
+            color: #7a8290;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .hafh-delete-details strong {
+            color: #0b1f3a;
+            font-size: .95rem;
+        }
+
+        .hafh-delete-details small {
+            display: block;
+            margin-top: 4px;
+            color: #7a8290;
+        }
+
+    .hafh-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: .78rem;
+        font-weight: 700;
+    }
+
+    .hafh-status-available {
+        background: #e9f7ef;
+        color: #197044;
+    }
+
+    .hafh-status-unavailable {
+        background: #fff0ef;
+        color: #b42318;
+    }
+
+    .hafh-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+        .hafh-form-actions.centered {
+            justify-content: center;
+        }
+
+    .hafh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        font-size: .9rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .hafh-btn-secondary {
+        background: #eef1f5;
+        color: #0b1f3a;
+    }
+
+        .hafh-btn-secondary:hover {
+            background: #e2e6ec;
+            color: #0b1f3a;
+        }
+
+    .hafh-btn-danger {
+        background: #b42318;
+        color: #ffffff;
+    }
+
+        .hafh-btn-danger:hover {
+            background: #941b12;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+
+    @@media (max-width: 650px) {
+
+        .hafh-page {
+            padding: 30px 15px;
+        }
+
+        .hafh-delete-container {
+            margin: 15px auto;
+            padding: 30px 20px;
+        }
+
+        .hafh-form-actions.centered {
+            flex-direction: column-reverse;
+        }
+
+        .hafh-form-actions .hafh-btn {
+            width: 100%;
+        }
+    }
+
+</style>

@@ -1,56 +1,383 @@
-@model HomeAwayFromHome.Models.Amenity
+@model HomeAwayFromHome.Models.Availability
 
 @{
-    ViewData["Title"] = "Amenity Details";
+    ViewData["Title"] = "Availability Details";
 }
 
 <div class="hafh-page">
 
-    <div class="hafh-detail-header">
-        <div>
-            <span class="hafh-eyebrow">AMENITY</span>
-            <h1>@Model.Name</h1>
-            <p>Amenity details</p>
+    <div class="hafh-detail-container">
+
+        <div class="hafh-detail-header">
+
+            <div>
+                <span class="hafh-eyebrow">PROPERTY CALENDAR</span>
+
+                <h1>Availability Details</h1>
+
+                <p>
+                    View the availability information for this property.
+                </p>
+            </div>
+
+            <div class="hafh-detail-actions">
+
+                @if (User.IsInRole("Admin") || User.IsInRole("Owner"))
+                {
+                    <a asp-action="Edit"
+                       asp-route-id="@Model.AvailabilityID"
+                       asp-route-propertyId="@Model.PropertyID"
+                       class="hafh-btn hafh-btn-gold">
+                        Edit Availability
+                    </a>
+                }
+
+                <a asp-action="Index"
+                   asp-route-propertyId="@Model.PropertyID"
+                   class="hafh-btn hafh-btn-outline">
+                    ← Back
+                </a>
+
+            </div>
+
         </div>
 
-        <div class="hafh-detail-actions">
-            <a asp-action="Edit" asp-route-id="@Model.AmenityID"
-               class="hafh-btn hafh-btn-gold">
-                Edit
-            </a>
 
-            <a asp-action="Index" class="hafh-btn hafh-btn-outline">
-                Back
-            </a>
-        </div>
-    </div>
+        <div class="hafh-detail-card">
 
-    <div class="hafh-detail-card">
+            <div class="hafh-detail-section">
 
-        <div class="hafh-detail-section">
-            <h3>Amenity Information</h3>
+                <span class="hafh-section-label">
+                    AVAILABILITY INFORMATION
+                </span>
 
-            <div class="hafh-detail-grid">
+                <div class="hafh-info-grid">
 
-                <div>
-                    <span>ID</span>
-                    <strong>@Model.AmenityID</strong>
-                </div>
+                    <div class="hafh-info-item">
 
-                <div>
-                    <span>Name</span>
-                    <strong>@Model.Name</strong>
+                        <span>Availability ID</span>
+
+                        <strong>
+                            #@Model.AvailabilityID
+                        </strong>
+
+                    </div>
+
+
+                    <div class="hafh-info-item">
+
+                        <span>Property ID</span>
+
+                        <strong>
+                            #@Model.PropertyID
+                        </strong>
+
+                    </div>
+
+
+                    <div class="hafh-info-item">
+
+                        <span>Available From</span>
+
+                        <strong>
+                            @Model.AvailableFrom.ToString("dd MMM yyyy")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="hafh-info-item">
+
+                        <span>Available To</span>
+
+                        <strong>
+                            @Model.AvailableTo.ToString("dd MMM yyyy")
+                        </strong>
+
+                    </div>
+
                 </div>
 
             </div>
-        </div>
 
-        <div class="hafh-detail-section">
-            <h3>Description</h3>
-            <p class="hafh-description">
-                @Model.Description
-            </p>
+
+            <div class="hafh-detail-section">
+
+                <span class="hafh-section-label">
+                    STATUS
+                </span>
+
+                @{
+                    var statusClass =
+                        Model.Status?.ToLower() == "available"
+                            ? "hafh-status-available"
+                            : "hafh-status-unavailable";
+                }
+
+                <span class="hafh-status @statusClass">
+                    @Model.Status
+                </span>
+
+            </div>
+
+
+            <div class="hafh-detail-section hafh-date-section">
+
+                <span class="hafh-section-label">
+                    AVAILABILITY PERIOD
+                </span>
+
+                <div class="hafh-date-display">
+
+                    <div>
+                        <small>FROM</small>
+
+                        <strong>
+                            @Model.AvailableFrom.ToString("dd MMM yyyy")
+                        </strong>
+                    </div>
+
+                    <span class="hafh-date-arrow">→</span>
+
+                    <div>
+                        <small>TO</small>
+
+                        <strong>
+                            @Model.AvailableTo.ToString("dd MMM yyyy")
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
     </div>
+
 </div>
+
+
+<style>
+
+    .hafh-page {
+        min-height: calc(100vh - 160px);
+        padding: 50px 24px;
+        background: #f7f8fb;
+    }
+
+    .hafh-detail-container {
+        max-width: 950px;
+        margin: 0 auto;
+    }
+
+    .hafh-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .hafh-eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: #c9a227;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+
+    .hafh-detail-header h1 {
+        margin: 0 0 8px;
+        color: #0b1f3a;
+        font-size: 2.2rem;
+        font-weight: 700;
+    }
+
+    .hafh-detail-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: .95rem;
+    }
+
+    .hafh-detail-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .hafh-detail-card {
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(11, 31, 58, .08);
+    }
+
+    .hafh-detail-section {
+        padding: 30px;
+        border-bottom: 1px solid #e8ebf0;
+    }
+
+    .hafh-detail-section:last-child {
+        border-bottom: none;
+    }
+
+    .hafh-section-label {
+        display: block;
+        margin-bottom: 20px;
+        color: #c9a227;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+    }
+
+    .hafh-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .hafh-info-item {
+        padding: 20px;
+        background: #f8f9fb;
+        border: 1px solid #edf0f4;
+        border-radius: 10px;
+    }
+
+    .hafh-info-item span {
+        display: block;
+        margin-bottom: 7px;
+        color: #7a8290;
+        font-size: .78rem;
+    }
+
+    .hafh-info-item strong {
+        color: #0b1f3a;
+        font-size: 1rem;
+    }
+
+    .hafh-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 15px;
+        border-radius: 999px;
+        font-size: .82rem;
+        font-weight: 700;
+    }
+
+    .hafh-status-available {
+        background: #e9f7ef;
+        color: #197044;
+    }
+
+    .hafh-status-unavailable {
+        background: #fff0ef;
+        color: #b42318;
+    }
+
+    .hafh-date-display {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .hafh-date-display div {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .hafh-date-display small {
+        color: #7a8290;
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .hafh-date-display strong {
+        color: #0b1f3a;
+        font-size: 1.15rem;
+    }
+
+    .hafh-date-arrow {
+        color: #c9a227;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .hafh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-size: .88rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .hafh-btn-gold {
+        background: #c9a227;
+        color: #ffffff;
+    }
+
+    .hafh-btn-gold:hover {
+        background: #ad8b1e;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    .hafh-btn-outline {
+        background: #ffffff;
+        color: #0b1f3a;
+        border: 1px solid #d9dee7;
+    }
+
+    .hafh-btn-outline:hover {
+        background: #f7f8fb;
+        color: #0b1f3a;
+        border-color: #0b1f3a;
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .hafh-page {
+            padding: 30px 15px;
+        }
+
+        .hafh-detail-header {
+            flex-direction: column;
+        }
+
+        .hafh-detail-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .hafh-detail-actions .hafh-btn {
+            width: 100%;
+        }
+
+        .hafh-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hafh-date-display {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .hafh-date-arrow {
+            transform: rotate(90deg);
+        }
+
+    }
+
+</style>
