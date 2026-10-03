@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="HomeAwayFromHome.API/HomeAwayFromHome.API.csproj" Id="a6c4665f-0260-4b0b-a57d-4cc4b5cd4d2b" />
+  <Project Path="HomeAwayFromHome.Tests/HomeAwayFromHome.Tests.csproj" />
   <Project Path="HomeAwayFromHome/HomeAwayFromHome.csproj" />
 </Solution>
